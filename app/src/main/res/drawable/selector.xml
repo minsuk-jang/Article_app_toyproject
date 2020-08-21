@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="false" android:state_selected="false"
+        android:drawable="@drawable/button_normal"/>
+
+    <item android:state_pressed="false" android:state_selected="true">
+        <shape android:shape="rectangle">
+            <stroke android:width="@dimen/stroke_width" android:color="#FFFFFF"/>
+            <solid android:color="#c8c8c8"/>
+            <corners android:radius="@dimen/radius"/>
+        </shape>
+    </item>
+</selector>
