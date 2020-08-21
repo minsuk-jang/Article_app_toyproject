@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true">
+
+            <GridLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:columnCount="3">
+
+                <ImageButton
+                    android:id="@+id/google"
+                    android:layout_width="@dimen/button_image_width"
+                    android:layout_height="@dimen/button_image_height"
+                    android:background="@drawable/selector"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/google"
+                    android:tooltipText="Google" />
+
+                <ImageButton
+                    android:id="@+id/chosun"
+                    android:layout_width="@dimen/button_image_width"
+                    android:layout_height="@dimen/button_image_height"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:background="@drawable/selector"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/chosun"
+                    android:tooltipText="조선 일보" />
+
+                <ImageButton
+                    android:id="@+id/donga"
+                    android:layout_width="@dimen/button_image_width"
+                    android:layout_height="@dimen/button_image_height"
+                    android:background="@drawable/selector"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/donga"
+                    android:tooltipText="동아 일보" />
+
+                <ImageButton
+                    android:id="@+id/joongang"
+                    android:layout_width="@dimen/button_image_width"
+                    android:layout_height="@dimen/button_image_height"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/selector"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/joongang"
+                    android:tooltipText="중앙 일보" />
+
+                <ImageButton
+                    android:id="@+id/kukmin"
+                    android:layout_width="@dimen/button_image_width"
+                    android:layout_height="@dimen/button_image_height"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginRight="20dp"
+                    android:background="@drawable/selector"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/kukmin"
+                    android:tooltipText="국민 일보" />
+
+                <ImageButton
+                    android:id="@+id/ytn"
+                    android:layout_width="@dimen/button_image_width"
+                    android:layout_height="@dimen/button_image_height"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/selector"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ytn"
+                    android:tooltipText="YTN" />
+            </GridLayout>
+
+
+        </ScrollView>
+
+
+    </RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
