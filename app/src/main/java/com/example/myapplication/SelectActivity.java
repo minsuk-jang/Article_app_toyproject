@@ -70,7 +70,7 @@ public class SelectActivity extends AppCompatActivity implements View.OnClickLis
             }
         }
 
-        if(ret.size() == 3){
+        if(ret.size() >= 1){
             confirm.setVisibility(View.VISIBLE);
         }else
             confirm.setVisibility(View.INVISIBLE);
