@@ -1,2 +1,3 @@
+include ':recycle_view_test'
 include ':app'
 rootProject.name = "My Application"
