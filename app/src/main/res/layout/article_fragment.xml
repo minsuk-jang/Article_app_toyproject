@@ -10,7 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:id="@+id/init_progressbar" />
+        android:id="@+id/init_progressbar"
+        android:progressBackgroundTint="@color/baseColor"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"

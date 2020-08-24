@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.myapplication.DataVO.articleVO;
 import com.example.myapplication.Holder.articleHolder;
 import com.example.myapplication.Holder.progressHolder;
@@ -23,8 +25,10 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private List<articleVO> list;
     private boolean isLoading = false;
     private onLoadListener onLoadListener;
+    private Context context;
 
-    public RecycleAdapter(RecyclerView recyclerView) {
+    public RecycleAdapter(RecyclerView recyclerView, Context context) {
+        this.context = context;
         final LinearLayoutManager manager = (LinearLayoutManager)recyclerView.getLayoutManager();
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -74,6 +78,7 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         if(holder instanceof progressHolder){
             ((progressHolder) holder).getProgressBar().setIndeterminate(true);
         }else if(holder instanceof articleHolder){
+            Glide.with(context).load(list.get(position).getImg_url()).into(((articleHolder) holder).getImageView()); //이미지 넣기
             ((articleHolder) holder).getTitle().setText(list.get(position).getTitle());
             ((articleHolder) holder).getContent().setText(list.get(position).getContent());
         }

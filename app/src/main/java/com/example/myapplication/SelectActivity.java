@@ -1,6 +1,8 @@
 package com.example.myapplication;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.media.Image;
 import android.os.Bundle;
 import android.view.View;
@@ -10,6 +12,8 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,9 +33,10 @@ public class SelectActivity extends AppCompatActivity implements View.OnClickLis
         confirm = (Button) findViewById(R.id.confirm);
         confirm.setOnClickListener(this);
         ret = new ArrayList<>();
-        init();
 
+        init();
     }
+
 
     //초기화
     private void init() {

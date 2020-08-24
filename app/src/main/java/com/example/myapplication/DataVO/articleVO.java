@@ -1,5 +1,6 @@
 package com.example.myapplication.DataVO;
 
+
 public class articleVO {
     String img_url, url, title, content;
 
@@ -25,4 +26,5 @@ public class articleVO {
     public String getUrl() {
         return url;
     }
+
 }

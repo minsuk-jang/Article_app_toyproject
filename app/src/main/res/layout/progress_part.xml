@@ -8,6 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:id="@+id/progress_circular"/>
+        android:id="@+id/progress_circular"
+        android:progressBackgroundTint="@color/baseColor"/>
 
 </LinearLayout>
