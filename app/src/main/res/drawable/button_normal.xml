@@ -1,22 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-
     <item>
-        <shape android:shape="oval">
-            <padding
-                android:bottom="2.5dp"
-                android:right="2.5dp"/>
-            <corners android:radius="@dimen/radius"/>
-            <stroke android:width="@dimen/stroke_width" android:color="#719e71"/>
+        <shape>
+            <corners android:radius="100dp"/>
+            <solid android:color="@color/secondaryColor"/>
         </shape>
     </item>
-
-    <item>
-        <shape android:shape="oval">
-            <corners android:radius="@dimen/radius"/>
-            <solid android:color="#82EB5A"/>
-            <stroke android:width="@dimen/stroke_width" android:color="#82EB5A"/>
-        </shape>
-    </item>
+    <item android:drawable="@drawable/baseline_done" />
 
 </layer-list>

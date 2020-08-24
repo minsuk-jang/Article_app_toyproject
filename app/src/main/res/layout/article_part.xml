@@ -21,6 +21,7 @@
         android:layout_toRightOf="@+id/imageView"
         android:ellipsize="end"
         android:text="타이틀"
+        android:maxLines="1"
         android:textSize="20dp"
         android:textStyle="bold"/>
 
@@ -32,6 +33,7 @@
         android:ellipsize="end"
         android:layout_toRightOf="@+id/imageView"
         android:layout_marginTop="5dp"
+        android:maxLines="2"
         android:text="내용" />
 
 </RelativeLayout>
