@@ -1,12 +1,11 @@
 {
   "donga": {
     "index": "https://www.donga.com/",
-    "main": {
-      "main_class": "ul.topnews_list",
-      "main_container_sub_class": "li.list_item",
-      "title": "h1.title",
-      "article_photo": "div.articlePhotoC",
-      "article_txt": "div.article_txt"
+    "today": {
+      "today_class": "ul.topnews_list > *",
+      "today_title": "h1.title",
+      "today_article_photo": "div.articlePhotoC > span.thumb > img",
+      "today_article_txt": "div.article_txt"
     }
   }
 }

@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +21,6 @@ import java.util.List;
 public class RecycleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final int VIEW_PROGRESS = 2;
     private final int VIEW_ARTICLE = 1;
-    private final int VIEW_THRESHOLD = 1;
     private int totalViewCount, lastVisibleItem;
     private List<articleVO> list;
     private boolean isLoading = false;
@@ -32,15 +32,19 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         final LinearLayoutManager manager = (LinearLayoutManager)recyclerView.getLayoutManager();
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
+            //todo 화면 개선
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
 
+                if(dx == 0 && dy == 0)
+                    return;
+
                 totalViewCount = manager.getItemCount();
                 lastVisibleItem = manager.findLastVisibleItemPosition();
-
-                if(!isLoading && totalViewCount <=  lastVisibleItem + VIEW_THRESHOLD){
+                Log.d("jms","total Count : " + totalViewCount + " Last : " + lastVisibleItem);
+                if(!isLoading && totalViewCount == lastVisibleItem ){
                     if(onLoadListener != null){
-                        onLoadListener.onLoad(list);
+                        onLoadListener.onLoad(totalViewCount);
                     }
 
                     isLoading = true;
@@ -78,7 +82,7 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         if(holder instanceof progressHolder){
             ((progressHolder) holder).getProgressBar().setIndeterminate(true);
         }else if(holder instanceof articleHolder){
-            Glide.with(context).load(list.get(position).getImg_url()).into(((articleHolder) holder).getImageView()); //이미지 넣기
+            Glide.with(context).load(list.get(position).getImg_url()).placeholder(R.drawable.ic_launcher_foreground).into(((articleHolder) holder).getImageView()); //이미지 넣기
             ((articleHolder) holder).getTitle().setText(list.get(position).getTitle());
             ((articleHolder) holder).getContent().setText(list.get(position).getContent());
         }
@@ -91,6 +95,11 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public int getItemCount() {
-        return list == null ? 0 : list.size();
+        return list == null ? 0 : totalViewCount;
     }
+
+    public void setSize(int size){
+        this.totalViewCount = Math.min(size,list.size());
+    }
+
 }
