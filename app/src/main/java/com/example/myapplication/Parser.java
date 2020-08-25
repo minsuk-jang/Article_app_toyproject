@@ -27,109 +27,118 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Handler;
 
-public class Parser extends AsyncTask<Void, Void, List<articleVO>> {
+public class Parser extends AsyncTask<Object, List<articleVO>, List<articleVO>> {
     private String FILE = "jsons/";
-    private String index;
     private String title;
-    private int state;
-    private List<articleVO> list;
     private Context context;
+    private final int TODAY = 0;
     private RecycleAdapter adapter;
     private ProgressBar progressBar;
     private RecyclerView recyclerView;
+    private final int FIX = 5;
 
-    public Parser(String title, int state, List<articleVO> list, Context context, RecycleAdapter adapter) {
+    public Parser(String title, Context context, RecycleAdapter adapter,RecyclerView recyclerView, ProgressBar progressBar) {
         this.title = title;
-        this.state = state;
-        this.list = list;
         this.context = context;
         this.adapter = adapter;
+        this.progressBar =progressBar;
+        this.recyclerView= recyclerView;
     }
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-    }
+
 
     @Override
-    protected void onPostExecute(List<articleVO> articleVOS) {
-        adapter.setList(articleVOS);
+    protected void onProgressUpdate(List<articleVO>... values) {
+        super.onProgressUpdate(values);
+        Log.d("jms","progressUpdate");
+        adapter.setList(values[0]);
+        adapter.setSize(values[0].size());
         adapter.notifyDataSetChanged();
         progressBar.setVisibility(View.GONE);
         recyclerView.setVisibility(View.VISIBLE);
     }
 
     @Override
-    protected List<articleVO> doInBackground(Void... voids) {
-        parsing(title, 0, context);
+    protected List<articleVO> doInBackground(Object... objects) {
+        int state = (int) objects[0];
+        List<articleVO> list = (List<articleVO>) objects[1];
+        JSONObject object = read_JSON_File();
+        String base_URL = null;
+
+        try {
+            base_URL = object.getString("index");
+            choose_state(object, state, list, base_URL);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         return list;
     }
 
-    public void setInit(RecyclerView recyclerView, ProgressBar progressBar) {
-        this.recyclerView = recyclerView;
-        this.progressBar = progressBar;
+    //고른 아이콘에 맞는 크롤링
+    private void choose_state(JSONObject head, int state, List<articleVO> list, String base_URL) {
+        JSONObject body = null;
+        try {
+            if (state == TODAY) {
+                body = head.getJSONObject("today");
+                today_crawling(list, body, base_URL);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void parsing(String title, int state, Context context) {
-        AssetManager manager = context.getResources().getAssets();
+    private void today_crawling(List<articleVO> list, JSONObject body, String base_URL) throws IOException, JSONException {
+        String today_class = body.getString("today_class");
+        String today_title = body.getString("today_title");
+        String today_article_photo = body.getString("today_article_photo");
+        String today_article_txt = body.getString("today_article_txt");
 
+        Document document = Jsoup.connect(base_URL).get();
+        Elements elements = document.select(today_class);
+
+        for (Element e : elements) {
+            Log.d("jms",title);
+            String link = e.select("a").attr("href");
+            Document temp_document = Jsoup.connect(link).get();
+            String img_url = temp_document.select(today_article_photo).attr("src");
+            String title = temp_document.select(today_title).text();
+            String content = temp_document.select(today_article_txt).text();
+
+            list.add(new articleVO(img_url,link,title,content));
+
+            if(list.size() == FIX){
+                publishProgress(list);
+            }
+        }
+
+    }
+
+    //JSON 파일을 읽어 들인다
+    private JSONObject read_JSON_File() {
+        AssetManager manager = context.getAssets();
+        JSONObject ret = null;
         try {
-            //파일 불러오기
             FILE += title + ".json";
             InputStream is = manager.open(FILE);
             InputStreamReader isr = new InputStreamReader(is);
-            BufferedReader br = new BufferedReader(isr);
+            BufferedReader reader = new BufferedReader(isr);
 
-            StringBuffer buffer = new StringBuffer();
-            String line = br.readLine();
+            StringBuilder sb = new StringBuilder();
+            String line = null;
 
-            while (line != null) {
-                buffer.append(line);
-                line = br.readLine();
+            while ((line = reader.readLine()) != null) {
+                sb.append(line + "\n");
             }
 
-            String jsonData = buffer.toString();
-            JSONObject object = new JSONObject(jsonData).getJSONObject(title);
-            index = object.getString("index");
-
-            parse_main(object);
-
-
+            ret = new JSONObject(sb.toString()).getJSONObject(title);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        return ret;
     }
-
-    //메인 파싱
-    private void parse_main(JSONObject jsonObject) throws IOException, JSONException {
-        JSONObject object = jsonObject.getJSONObject("main");
-        String main_class = object.getString("main_class");
-        String main_container_sub_class = object.getString("main_container_sub_class");
-        String title = object.getString("title");
-        String article_photo = object.getString("article_photo");
-        String article_txt = object.getString("article_txt");
-
-        Document document = Jsoup.connect(index).get();
-
-        Elements elements = document.select(main_class);
-        Elements core = elements.select(main_container_sub_class);
-
-        list = new ArrayList<>();
-        for (Element e : core) {
-            String link = e.select("a").attr("href");
-
-            Document sub_doc = Jsoup.connect(link).get();
-            String sub_title = sub_doc.select(title).text();
-            String sub_content = sub_doc.select(article_txt).text();
-            String sub_img = sub_doc.select(article_photo).select("img").attr("src");
-
-            list.add(new articleVO(sub_img, link, sub_title, sub_content));
-
-            break;
-        }
-
-    }
-
 }

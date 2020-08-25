@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 import android.graphics.Rect;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -23,16 +24,17 @@ import com.example.myapplication.DataVO.articleVO;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.net.ssl.SNIHostName;
+
 public class articleFragment extends Fragment {
+    public static final int VIEW_LIMIT = 5;
     private String title;
     private RecyclerView recyclerView;
     private RecycleAdapter adapter;
     private ProgressBar init_progress;
     private RelativeLayout relativeLayout;
-    private final int VIEW_THRESHOLD = 1;
-    private ArrayList<articleVO> list;
+    private List<articleVO> list;
     private Parser parser;
-    private boolean init = true;
 
     //fragment는 생성자를 한번만 호출한다.
     public articleFragment(String title) {
@@ -70,36 +72,29 @@ public class articleFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(relativeLayout.getContext()));
 
         adapter = new RecycleAdapter(recyclerView,getContext());
-        adapter.setList(list);
         recyclerView.setAdapter(adapter);
 
         adapter.setOnLoadListener(new onLoadListener() {
             @Override
-            public void onLoad(List<articleVO> list) {
-                //데이터를 얻는다
-                Log.d("jms", title + " Down swipe");
-                list.add(null);
-                adapter.notifyItemInserted(list.size() - 1);
-                new Handler().postDelayed(new ImportData(list), 2000);
+            public void onLoad(int size) {
+                list.add(size-1,null);
+                adapter.notifyItemInserted(size-1);
+                new Handler().postDelayed(new PageRunnable(size,size + VIEW_LIMIT),3000);
             }
         });
 
+        //맨 처음 수행할 경우
         if (list == null)
             init();
-        else{
-            adapter.notifyDataSetChanged();
-            init_progress.setVisibility(View.GONE);
-            recyclerView.setVisibility(View.VISIBLE);
-        }
 
         recyclerView.addItemDecoration(new ItemDeco());
         return relativeLayout;
     }
 
     private void init() {
-        parser = new Parser(title,0,list,getContext(),adapter);
-        parser.setInit(recyclerView,init_progress);
-        parser.execute();
+        list=  new ArrayList<>();
+        parser = new Parser(title,getContext(),adapter,recyclerView,init_progress);
+        parser.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,0,list); //AsyncTask를 병렬로 수행
     }
 
     private class ItemDeco extends RecyclerView.ItemDecoration {
@@ -114,36 +109,25 @@ public class articleFragment extends Fragment {
             outRect.set(20, 20, 20, 20);
             view.setBackgroundColor(0xFFEcE9E9);
             ViewCompat.setElevation(view, 20.0f);
-
-
         }
     }
 
-
-    private class ImportData implements Runnable {
-        private List<articleVO> list;
-
-        public ImportData(List<articleVO> l) {
-            this.list = l;
+    //스크롤에 관련된 Runnable
+    private class PageRunnable implements Runnable{
+        private int size, delete ;
+        public PageRunnable(int delete,int size){
+            this.size = size;
+            this.delete = delete;
         }
-
         @Override
         public void run() {
-            list.remove(list.size() - 1);
-            adapter.notifyItemRemoved(list.size());
+            list.remove(delete);
+            adapter.notifyItemRemoved(delete);
 
-            int idx = list.size();
-            int end = list.size() + 5;
-
-            for (int i = idx; i < end; i++) {
-                String t = title + i;
-                list.add(new articleVO("", "", title, title + "~~~~~"));
-            }
-
+            adapter.setSize(size + VIEW_LIMIT);
             adapter.notifyDataSetChanged();
             adapter.setLoad();
         }
-
     }
 
 }

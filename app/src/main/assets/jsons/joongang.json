@@ -1,0 +1,12 @@
+{
+  "joongang": {
+    "index": "https://joongang.joins.com/",
+    "today": {
+      "today_class": "div.type1 > ul.list_vertical > *, div.type2 > ul.list_vertical > *",
+      "today_title": "h1#article_title",
+      "today_article_photo": "div.ab_photo > div.image > img",
+      "today_article_txt": "div#article_body"
+    }
+  }
+}
+
