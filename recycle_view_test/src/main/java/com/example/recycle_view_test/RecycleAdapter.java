@@ -32,7 +32,7 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 super.onScrolled(recyclerView, dx, dy);
 
                 totlaItemCount = manager.getItemCount();
-                lastVisibleItem = manager.findLastVisibleItemPosition();
+                lastVisibleItem = manager.findLastCompletelyVisibleItemPosition();
 
                 if(!isLoading && totlaItemCount <= lastVisibleItem+visibleThreshold){
                     if(onLoadListener != null)

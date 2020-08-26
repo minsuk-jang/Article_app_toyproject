@@ -51,8 +51,7 @@ public class Parser extends AsyncTask<Object, List<articleVO>, List<articleVO>> 
     protected void onProgressUpdate(List<articleVO>... values) {
         super.onProgressUpdate(values);
         Log.d("jms","progressUpdate");
-        adapter.setList(values[0]);
-        adapter.setSize(values[0].size());
+        adapter.setList(new ArrayList<articleVO>(values[0]));
         adapter.notifyDataSetChanged();
         progressBar.setVisibility(View.GONE);
         recyclerView.setVisibility(View.VISIBLE);

@@ -1,6 +1,8 @@
 package com.example.myapplication;
 
+import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.pdf.PdfDocument;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,13 +18,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.DataVO.articleVO;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 import javax.net.ssl.SNIHostName;
 
@@ -71,15 +76,13 @@ public class articleFragment extends Fragment {
         recyclerView = (RecyclerView) view.findViewById(R.id.recycle_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(relativeLayout.getContext()));
 
-        adapter = new RecycleAdapter(recyclerView,getContext());
+        adapter = new RecycleAdapter(recyclerView, getContext());
         recyclerView.setAdapter(adapter);
 
         adapter.setOnLoadListener(new onLoadListener() {
             @Override
-            public void onLoad(int size) {
-                list.add(size-1,null);
-                adapter.notifyItemInserted(size-1);
-                new Handler().postDelayed(new PageRunnable(size,size + VIEW_LIMIT),3000);
+            public void onLoad(List<articleVO> articleVOS) {
+                Log.d("jms", "list : " + list.size());
             }
         });
 
@@ -87,47 +90,14 @@ public class articleFragment extends Fragment {
         if (list == null)
             init();
 
-        recyclerView.addItemDecoration(new ItemDeco());
         return relativeLayout;
     }
 
     private void init() {
-        list=  new ArrayList<>();
-        parser = new Parser(title,getContext(),adapter,recyclerView,init_progress);
-        parser.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,0,list); //AsyncTask를 병렬로 수행
+        list = new ArrayList<>();
+        parser = new Parser(title, getContext(), adapter, recyclerView, init_progress);
+        parser.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, 0, list); //AsyncTask를 병렬로 수행
     }
 
-    private class ItemDeco extends RecyclerView.ItemDecoration {
-        @Override
-        public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
-            super.getItemOffsets(outRect, view, parent, state);
-            final LinearLayoutManager manager = (LinearLayoutManager) recyclerView.getLayoutManager();
-
-            int totalCount = manager.getItemCount();
-            int lastItem = manager.findLastVisibleItemPosition();
-
-            outRect.set(20, 20, 20, 20);
-            view.setBackgroundColor(0xFFEcE9E9);
-            ViewCompat.setElevation(view, 20.0f);
-        }
-    }
-
-    //스크롤에 관련된 Runnable
-    private class PageRunnable implements Runnable{
-        private int size, delete ;
-        public PageRunnable(int delete,int size){
-            this.size = size;
-            this.delete = delete;
-        }
-        @Override
-        public void run() {
-            list.remove(delete);
-            adapter.notifyItemRemoved(delete);
-
-            adapter.setSize(size + VIEW_LIMIT);
-            adapter.notifyDataSetChanged();
-            adapter.setLoad();
-        }
-    }
 
 }

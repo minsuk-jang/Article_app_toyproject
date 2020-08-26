@@ -10,14 +10,17 @@
         android:id="@+id/main_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="15dp">
+        android:background="@color/baseColor"
+       >
 
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appbar_layout"
             android:layout_width="match_parent"
             android:layout_height="180dp"
             android:background="@drawable/appbar_layout_style"
-            android:fitsSystemWindows="true">
+            android:fitsSystemWindows="true"
+            android:layout_margin="5dp"
+            >
 
             <!-- App bar 내에서 위치를 조정하기 위해서 사용 -->
             <com.google.android.material.appbar.CollapsingToolbarLayout
