@@ -5,7 +5,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -40,11 +39,11 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     return;
 
                 totalViewCount = manager.getItemCount();
-                lastVisibleItem = manager.findLastVisibleItemPosition();
+                lastVisibleItem = manager.findLastCompletelyVisibleItemPosition();
                 Log.d("jms","total Count : " + totalViewCount + " Last : " + lastVisibleItem);
-                if(!isLoading && totalViewCount == lastVisibleItem ){
+                if(!isLoading && totalViewCount-1 == lastVisibleItem ){
                     if(onLoadListener != null){
-                        onLoadListener.onLoad(totalViewCount);
+
                     }
 
                     isLoading = true;
@@ -69,7 +68,7 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if(viewType == VIEW_ARTICLE){
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.article_part,parent,false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_view_article,parent,false);
             return new articleHolder(view);
         }else{
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.progress_part,parent,false);
@@ -95,11 +94,8 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public int getItemCount() {
-        return list == null ? 0 : totalViewCount;
+        return list == null ? 0 : list.size();
     }
 
-    public void setSize(int size){
-        this.totalViewCount = Math.min(size,list.size());
-    }
 
 }
