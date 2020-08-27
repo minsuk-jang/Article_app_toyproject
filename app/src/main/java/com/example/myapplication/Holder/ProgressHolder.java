@@ -8,10 +8,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.R;
 
-public class progressHolder extends RecyclerView.ViewHolder {
+public class ProgressHolder extends RecyclerView.ViewHolder {
     ProgressBar progressBar;
 
-    public progressHolder(@NonNull View itemView) {
+    public ProgressHolder(@NonNull View itemView) {
         super(itemView);
 
         progressBar = (ProgressBar)itemView.findViewById(R.id.progress_circular);
