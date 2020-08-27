@@ -1,11 +1,8 @@
 package com.example.myapplication;
 
-import android.graphics.Color;
-import android.graphics.Rect;
-import android.graphics.pdf.PdfDocument;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -16,33 +13,30 @@ import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.myapplication.DataVO.articleVO;
-import com.google.android.material.snackbar.Snackbar;
+import com.example.myapplication.DataVO.ArticleVO;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
-import javax.net.ssl.SNIHostName;
-
-public class articleFragment extends Fragment {
+public class ArticleFragment extends Fragment {
     public static final int VIEW_LIMIT = 5;
     private String title;
     private RecyclerView recyclerView;
     private RecycleAdapter adapter;
     private ProgressBar init_progress;
     private RelativeLayout relativeLayout;
-    private List<articleVO> list;
+    private List<ArticleVO> list;
     private Parser parser;
+    private boolean scrolling;
 
     //fragment는 생성자를 한번만 호출한다.
-    public articleFragment(String title) {
+    public ArticleFragment(String title) {
         this.title = title;
     }
 
@@ -66,7 +60,7 @@ public class articleFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
         Log.d("jms", title + " onCreateView....");
 
         View view = inflater.inflate(R.layout.article_fragment, container, false);
@@ -76,15 +70,8 @@ public class articleFragment extends Fragment {
         recyclerView = (RecyclerView) view.findViewById(R.id.recycle_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(relativeLayout.getContext()));
 
-        adapter = new RecycleAdapter(recyclerView, getContext());
+        adapter = new RecycleAdapter(this.getContext());
         recyclerView.setAdapter(adapter);
-
-        adapter.setOnLoadListener(new onLoadListener() {
-            @Override
-            public void onLoad(List<articleVO> articleVOS) {
-                Log.d("jms", "list : " + list.size());
-            }
-        });
 
         //맨 처음 수행할 경우
         if (list == null)

@@ -1,12 +1,11 @@
 package com.example.myapplication.DataVO;
 
 
-public class articleVO {
-    String img_url, url, title, content;
+public class ArticleVO {
+    String img_url, title, content;
 
-    public articleVO(String img_url, String url, String title, String content) {
+    public ArticleVO(String img_url, String title, String content) {
         this.content = content;
-        this.url = url;
         this.img_url = img_url;
         this.title = title;
     }
@@ -21,10 +20,6 @@ public class articleVO {
 
     public String getImg_url() {
         return img_url;
-    }
-
-    public String getUrl() {
-        return url;
     }
 
 }
