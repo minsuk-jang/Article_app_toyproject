@@ -10,12 +10,15 @@ import android.widget.ProgressBar;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.DataVO.ArticleVO;
+import com.example.myapplication.Parser.ParserHelper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.safety.Whitelist;
 import org.jsoup.select.Elements;
 
 import java.io.BufferedReader;
@@ -24,7 +27,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 
-public class Parser extends AsyncTask<Object, List<ArticleVO>, List<ArticleVO>> {
+public class ArticleCrawl extends AsyncTask<Object, List<ArticleVO>, List<ArticleVO>> {
     private String FILE = "jsons/";
     private String title;
     private Context context;
@@ -34,18 +37,18 @@ public class Parser extends AsyncTask<Object, List<ArticleVO>, List<ArticleVO>> 
     private RecyclerView recyclerView;
     private final int FIX = 5;
 
-    public Parser(String title, Context context, RecycleAdapter adapter,RecyclerView recyclerView, ProgressBar progressBar) {
+    public ArticleCrawl(String title, Context context, RecycleAdapter adapter, RecyclerView recyclerView, ProgressBar progressBar) {
         this.title = title;
         this.context = context;
         this.adapter = adapter;
-        this.progressBar =progressBar;
-        this.recyclerView= recyclerView;
+        this.progressBar = progressBar;
+        this.recyclerView = recyclerView;
     }
 
     @Override
     protected void onProgressUpdate(List<ArticleVO>... values) {
         super.onProgressUpdate(values);
-        Log.d("jms","progressUpdate");
+        Log.d("jms", "progressUpdate");
         adapter.setList(values[0]);
         adapter.notifyDataSetChanged();
         progressBar.setVisibility(View.GONE);
@@ -90,6 +93,7 @@ public class Parser extends AsyncTask<Object, List<ArticleVO>, List<ArticleVO>> 
         }
     }
 
+    //오늘의 기사 크롤링
     private void today_crawling(List<ArticleVO> list, JSONObject body, String base_URL) throws IOException, JSONException {
         String today_class = body.getString("today_class");
         String today_title = body.getString("today_title");
@@ -100,18 +104,24 @@ public class Parser extends AsyncTask<Object, List<ArticleVO>, List<ArticleVO>> 
         Elements elements = document.select(today_class);
 
         for (Element e : elements) {
-            Log.d("jms",title);
-            String link = e.select("a").attr("href");
-            Document temp_document = Jsoup.connect(link).get();
-            String img_url = temp_document.select(today_article_photo).attr("src");
-            String title = temp_document.select(today_title).text();
-            String content = temp_document.select(today_article_txt).html();
 
-            list.add(new ArticleVO(img_url,title,content));
+            //todo 크롤링 시, 오류 처리
+            try {
+                String link = e.select("a").attr("href");
+                Document temp_document = Jsoup.connect(link).get();
+                String img_url = temp_document.select(today_article_photo).attr("src");
+                String title = temp_document.select(today_title).text();
+                String content = temp_document.select(today_article_txt).html();
 
-            if(list.size() % FIX == 0){
-                publishProgress(list);
+                list.add(new ArticleVO(this.title,img_url, title,content));
+
+                if (list.size() % FIX == 0) {
+                    publishProgress(list);
+                }
+            }catch(IOException ee){
+                ee.printStackTrace();
             }
+
         }
 
     }
@@ -141,4 +151,6 @@ public class Parser extends AsyncTask<Object, List<ArticleVO>, List<ArticleVO>> 
         }
         return ret;
     }
+
+
 }

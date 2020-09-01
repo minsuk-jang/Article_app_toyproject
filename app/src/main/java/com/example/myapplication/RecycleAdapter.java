@@ -17,6 +17,9 @@ import com.example.myapplication.DataVO.ArticleVO;
 import com.example.myapplication.Holder.ArticleHolder;
 import com.example.myapplication.Holder.ProgressHolder;
 
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
+
 import java.util.List;
 
 public class RecycleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
@@ -44,6 +47,7 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 public void onClickItem(int pos) {
                     Intent intent = new Intent(context,ShowArticleActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP); //액티비티 하나만 띠운다.
+                    intent.putExtra("subject",list.get(pos).getSubject());
                     intent.putExtra("title",list.get(pos).getTitle());
                     intent.putExtra("content",list.get(pos).getContent());
 
@@ -62,9 +66,9 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         if(holder instanceof ProgressHolder){
             ((ProgressHolder) holder).getProgressBar().setIndeterminate(true);
         }else if(holder instanceof ArticleHolder){
-            Glide.with(this.context).load(list.get(position).getImg_url()).placeholder(R.drawable.ic_launcher_foreground).into(((ArticleHolder) holder).getImageView()); //이미지 넣기
+            Glide.with(this.context).load(list.get(position).getImg_src()).placeholder(R.drawable.ic_launcher_foreground).into(((ArticleHolder) holder).getImageView()); //이미지 넣기
             ((ArticleHolder) holder).getTitle().setText(list.get(position).getTitle());
-            ((ArticleHolder) holder).getContent().setText(Html.fromHtml(list.get(position).getContent()));
+            ((ArticleHolder) holder).getContent().setText(Jsoup.clean(list.get(position).getContent(), Whitelist.simpleText()));
         }
     }
 

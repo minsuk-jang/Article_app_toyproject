@@ -1,6 +1,7 @@
 {
   "donga": {
     "index": "https://www.donga.com/",
+    "delete_tag" : "div.txt_ban, div.article_relation, div#bestnews_layer, script",
     "today": {
       "today_class": "ul.topnews_list > *",
       "today_title": "h1.title",

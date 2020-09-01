@@ -43,6 +43,7 @@
                         android:background="@android:color/transparent"
                         android:hint="검색어를 입력하세요"
                         android:textColor="#FFFFFF"
+                        android:focusable="false"
                         android:textColorHint="#FFFFFF" />
                 </androidx.appcompat.widget.Toolbar>
 

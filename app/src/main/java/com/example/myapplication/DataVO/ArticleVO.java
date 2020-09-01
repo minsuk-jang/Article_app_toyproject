@@ -1,13 +1,25 @@
 package com.example.myapplication.DataVO;
 
 
-public class ArticleVO {
-    String img_url, title, content;
+import org.jsoup.select.Elements;
 
-    public ArticleVO(String img_url, String title, String content) {
+public class ArticleVO {
+    String subject, img_src, title, content;
+
+    public ArticleVO(String subject, String img_src, String title, String content) {
+        this.subject = subject;
         this.content = content;
-        this.img_url = img_url;
         this.title = title;
+        this.img_src = img_src;
+
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public String getImg_src() {
+        return img_src;
     }
 
     public String getTitle() {
@@ -17,9 +29,4 @@ public class ArticleVO {
     public String getContent() {
         return content;
     }
-
-    public String getImg_url() {
-        return img_url;
-    }
-
 }
