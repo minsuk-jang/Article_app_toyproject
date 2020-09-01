@@ -20,6 +20,7 @@ public class ArticleHolder extends RecyclerView.ViewHolder{
         imageView = (ImageView)itemView.findViewById(R.id.imageView);
         title = (TextView)itemView.findViewById(R.id.title);
         content = (TextView)itemView.findViewById(R.id.content);
+
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

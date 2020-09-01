@@ -1,11 +1,9 @@
 package com.example.myapplication;
 
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -14,8 +12,6 @@ import android.widget.RelativeLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,15 +21,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ArticleFragment extends Fragment {
-    public static final int VIEW_LIMIT = 5;
     private String title;
     private RecyclerView recyclerView;
     private RecycleAdapter adapter;
     private ProgressBar init_progress;
     private RelativeLayout relativeLayout;
     private List<ArticleVO> list;
-    private Parser parser;
-    private boolean scrolling;
+    private ArticleCrawl articleCrawl;
 
     //fragment는 생성자를 한번만 호출한다.
     public ArticleFragment(String title) {
@@ -82,8 +76,8 @@ public class ArticleFragment extends Fragment {
 
     private void init() {
         list = new ArrayList<>();
-        parser = new Parser(title, getContext(), adapter, recyclerView, init_progress);
-        parser.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, 0, list); //AsyncTask를 병렬로 수행
+        articleCrawl = new ArticleCrawl(title, getContext(), adapter, recyclerView, init_progress);
+        articleCrawl.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, 0, list); //AsyncTask를 병렬로 수행
     }
 
 
