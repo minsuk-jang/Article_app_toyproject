@@ -14,20 +14,15 @@ import com.example.myapplication.R;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.safety.Whitelist;
-import org.jsoup.select.Elements;
-import org.w3c.dom.Text;
 
-import java.io.IOException;
-
-public class DongaParser {
+public class JoongangParser {
     private Context context;
     private String text;
     private int idx = -1;
     private ViewGroup viewGroup;
 
-    public DongaParser(Context context, ViewGroup viewGroup, String text) {
+    public JoongangParser(Context context, ViewGroup viewGroup, String text) {
         this.viewGroup = viewGroup;
         this.context = context;
         this.text = text;
@@ -37,19 +32,17 @@ public class DongaParser {
 
     private void init() {
         Document body = Jsoup.parse(text);
-        body.select("div.reporter_view, div.txt_ban, div.article_relation, ul.relation_list, div#bestnews_layer").empty();
-        body.select("div.reporter_view, div.txt_ban, div.article_relation, ul.relation_list, div#bestnews_layer").unwrap();
-        body.select("span.thumb").unwrap();
 
         text = Jsoup.clean(body.html(), Whitelist.relaxed().addAttributes("p", "class")
                 .addAttributes("span", "class").addTags("strong")
                 .addAttributes("img", "data-src", "src")
                 .addAttributes("strong","class")
                 .removeTags("div"));
+
         text = text.replaceAll("<br>", "\n");
-        text = text.replaceAll("\n\n","\n");
         text = text.replaceAll("&nbsp", " ");
         text = text.replaceAll(";", "");
+        text = text.replaceAll("\n\n","\n");
         text = text.replaceAll("&amp", "&");
     }
 
@@ -60,7 +53,7 @@ public class DongaParser {
             char current = text.charAt(idx);
 
             if (current == '<') {
-                if (!sb.toString().isEmpty()) {
+                if (!sb.toString().trim().isEmpty()) {
                     //만들어진 텍스트가 있는 경우
                     viewGroup.addView(makeTextView(sb.toString().trim()));
                     sb.delete(0, sb.length());
@@ -80,7 +73,11 @@ public class DongaParser {
                 } else {
                     //나머지 태그들에서
                     TextView view = makeTagView();
-                    viewGroup.addView(adjustClass(tag, view));
+                    view = adjustClass(tag, view);
+
+                    if(view != null)
+                        viewGroup.addView(view);
+
                 }
 
             } else {
@@ -117,9 +114,9 @@ public class DongaParser {
 
     }
 
-    private View adjustClass(String tag, TextView view) {
+    private TextView adjustClass(String tag, TextView view) {
         LinearLayout.LayoutParams params = null;
-        if (tag.contains("txt")) {
+        if (tag.contains("caption")) {
             params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             params.setMargins(0, 2, 0, 5);
             view.setLayoutParams(params);
@@ -138,7 +135,7 @@ public class DongaParser {
             return view;
         }
 
-        return view;
+        return null;
     }
 
     private TextView makeTagView() {

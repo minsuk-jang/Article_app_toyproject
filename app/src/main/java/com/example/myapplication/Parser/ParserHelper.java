@@ -15,7 +15,7 @@ public class ParserHelper {
         if (kind.equals(DONGA)) {
             new DongaParser(c,vg,article).parsing();
         }else if(kind.equals(JOONGANG)){
-
+            new JoongangParser(c, vg, article).parsing();
         }
     }
 }
