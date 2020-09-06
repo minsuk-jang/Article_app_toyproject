@@ -27,7 +27,7 @@ public class ArticleFragment extends Fragment {
     private ProgressBar init_progress;
     private RelativeLayout relativeLayout;
     private List<ArticleVO> list;
-    private ArticleCrawl articleCrawl;
+    private ArticleCrawler articleCrawler;
 
     //fragment는 생성자를 한번만 호출한다.
     public ArticleFragment(String title) {
@@ -76,8 +76,8 @@ public class ArticleFragment extends Fragment {
 
     private void init() {
         list = new ArrayList<>();
-        articleCrawl = new ArticleCrawl(title, getContext(), adapter, recyclerView, init_progress);
-        articleCrawl.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, 0, list); //AsyncTask를 병렬로 수행
+        articleCrawler = new ArticleCrawler(title, getContext(), adapter, recyclerView, init_progress);
+        articleCrawler.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, 0, list); //AsyncTask를 병렬로 수행
     }
 
 

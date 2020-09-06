@@ -27,7 +27,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 
-public class ArticleCrawl extends AsyncTask<Object, List<ArticleVO>, List<ArticleVO>> {
+public class ArticleCrawler extends AsyncTask<Object, List<ArticleVO>, List<ArticleVO>> {
     private String FILE = "jsons/";
     private String title;
     private Context context;
@@ -37,7 +37,7 @@ public class ArticleCrawl extends AsyncTask<Object, List<ArticleVO>, List<Articl
     private RecyclerView recyclerView;
     private final int FIX = 5;
 
-    public ArticleCrawl(String title, Context context, RecycleAdapter adapter, RecyclerView recyclerView, ProgressBar progressBar) {
+    public ArticleCrawler(String title, Context context, RecycleAdapter adapter, RecyclerView recyclerView, ProgressBar progressBar) {
         this.title = title;
         this.context = context;
         this.adapter = adapter;
