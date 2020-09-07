@@ -16,8 +16,9 @@ public class ParserHelper {
     //todo 개선 필
     public static Spanned makeHtml(LinearLayout v, String kind, String article){
         if (kind.equals(DONGA)) {
-            return new DongaParser(v, article).parsing();
+            return new DongaParser(v, article).getString();
         }else if(kind.equals(JOONGANG)){
+            return new JoongangParser(v,article).getString();
         }
 
         return null;
