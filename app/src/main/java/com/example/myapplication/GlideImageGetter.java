@@ -75,7 +75,6 @@ public class GlideImageGetter implements Html.ImageGetter {
                 drawable.setBounds(0, 0, drawableWidth, drawableHeight);
                 setBounds(0, 0, drawableWidth, drawableHeight);
             }
-
             textView.setText(textView.getText());
         }
 
