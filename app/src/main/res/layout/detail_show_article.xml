@@ -23,13 +23,6 @@
                 android:textStyle="bold"
                 android:layout_marginBottom="10dp"/>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/content"
-                android:textSize="15dp"
-                android:textAppearance="?attr/textAppearanceBody1"
-                />
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

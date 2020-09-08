@@ -1,5 +1,6 @@
 package com.example.myapplication.Parser;
 
+import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -11,7 +12,9 @@ import android.text.style.AlignmentSpan;
 import android.text.style.ImageSpan;
 import android.view.Display;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.core.content.res.ResourcesCompat;
 
@@ -24,86 +27,52 @@ import net.nightwhistler.htmlspanner.TagNodeHandler;
 
 import org.htmlcleaner.TagNode;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public abstract class BaseParser {
     protected LinearLayout linearLayout;
     protected String text;
-    protected HtmlSpanner spanner;
+    protected List<Map<String, String>> lists;
 
-    protected BaseParser(LinearLayout linearLayout, String text){
+    protected BaseParser(LinearLayout linearLayout, String text) {
         this.linearLayout = linearLayout;
-        this.text =text;
-        spanner = new HtmlSpanner();
+        this.text = text;
+        lists = new ArrayList<>();
+
     }
 
     //초기 설정
     abstract void init();
 
+    //파싱 및 컴포넌트 추가
+    abstract void addComponent();
 
-    //이미지 핸들러
-    protected class ImageTagHandler extends TagNodeHandler {
-        @Override
-        public void handleTagNode(TagNode node, final SpannableStringBuilder builder, final int start, final int end) {
-            String src = node.getAttributes().get("src");
+    //이미지 추가
+    protected void addImageViewComponent(String src) {
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        params.setMargins(0, 10, 0, 5);
 
-            if(src == null)
-                src = node.getAttributeByName("data-src");
+        ImageView imageView = new ImageView(linearLayout.getContext());
+        Glide.with(linearLayout.getContext())
+                .load(src)
+                .placeholder(R.drawable.ic_launcher_foreground)
+                .into(imageView);
 
-            builder.append("\n\ufff0\n");
-
-            Drawable dr = getDrawable(src);
-            ImageSpan span = new ImageSpan(dr);
-            builder.setSpan(span, start+1,end+2,Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }
+        imageView.setAdjustViewBounds(true);
+        imageView.setLayoutParams(params);
+        linearLayout.addView(imageView);
     }
 
-    //기기에 맞춰서 이미지의 사이즈를 확장시켜주는 메소드
-    protected void setBounds(Drawable dr){
-        Display display = ((WindowManager)linearLayout.getContext().getSystemService(linearLayout.getContext().WINDOW_SERVICE)).getDefaultDisplay();
+    protected TextView makeTextViewComponent(int left, int right, int top, int bottom) {
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        params.setMargins(left, top, right, bottom);
 
-        Point p = new Point();
-        display.getSize(p);
+        TextView textView = new TextView(linearLayout.getContext());
+        textView.setLayoutParams(params);
+        return textView;
 
-        int maxWidth = p.x;
-        dr.setBounds(0,0, maxWidth,(maxWidth*dr.getIntrinsicHeight())/dr.getIntrinsicWidth());
-
-    }
-
-    //텍스트 반환하는 메소드
-    protected Spanned getString(){
-        return spanner.fromHtml(text);
-    }
-
-    //이미지 반환
-    protected Drawable getDrawable(String src){
-        try {
-            Drawable dr = new AsyncTask<String, Void, Drawable>() {
-                @Override
-                protected Drawable doInBackground(String... strings) {
-                    try {
-                        Drawable dr = Glide.with(linearLayout.getContext())
-                                .load(strings[0])
-                                .skipMemoryCache(true)
-                                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                                .placeholder(R.drawable.ic_launcher_foreground)
-                                .fitCenter()
-                                .submit().get();
-
-                        return dr;
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    return null;
-                }
-            }.execute(src).get(); //이미지를 동기적으로 얻는다.
-
-            setBounds(dr);
-
-            return dr;
-        } catch (Exception e) {
-            Drawable dr = ResourcesCompat.getDrawable(linearLayout.getResources(),R.drawable.ic_launcher_foreground,null);
-            setBounds(dr);
-
-            return dr;
-        }
     }
 }

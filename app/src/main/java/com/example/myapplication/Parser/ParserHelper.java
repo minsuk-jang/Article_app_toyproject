@@ -14,13 +14,11 @@ public class ParserHelper {
     }
 
     //todo 개선 필
-    public static Spanned makeHtml(LinearLayout v, String kind, String article){
+    public static void attachCompoent(LinearLayout v, String kind, String article){
         if (kind.equals(DONGA)) {
-            return new DongaParser(v, article).getString();
+            new DongaParser(v, article).addComponent();
         }else if(kind.equals(JOONGANG)){
-            return new JoongangParser(v,article).getString();
+          //  return new JoongangParser(v,article).getString();
         }
-
-        return null;
     }
 }
