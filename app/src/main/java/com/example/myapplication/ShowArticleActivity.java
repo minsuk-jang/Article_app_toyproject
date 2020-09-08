@@ -67,7 +67,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class ShowArticleActivity extends AppCompatActivity {
-    TextView title, content;
+    TextView title;
     LinearLayout linearLayout;
 
     @Override
@@ -83,11 +83,9 @@ public class ShowArticleActivity extends AppCompatActivity {
         String c = intent.getStringExtra("content");
 
         title = (TextView) findViewById(R.id.title);
-        content = (TextView)findViewById(R.id.content);
 
         title.setText(t);
-
-        content.setText(ParserHelper.makeHtml(linearLayout,s,c));
+        ParserHelper.attachCompoent(linearLayout,s,c);
     }
 
     @Override

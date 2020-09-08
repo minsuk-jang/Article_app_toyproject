@@ -20,12 +20,17 @@ import android.text.style.LeadingMarginSpan;
 import android.text.style.QuoteSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
+import android.util.TypedValue;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.core.widget.TextViewCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -39,122 +44,109 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.safety.Whitelist;
 
-public class DongaParser extends BaseParser{
+import java.util.Map;
+
+public class DongaParser extends BaseParser {
 
     public DongaParser(LinearLayout linearLayout, String text) {
-        super(linearLayout,text);
+        super(linearLayout, text);
         init();
     }
 
     void init() {
         Document body = Jsoup.parse(text);
 
-        body.select("div.reporter_view, div.txt_ban, div.article_relation, ul.relation_list, div#bestnews_layer, div.article_keyword").empty();
-        body.select("div.reporter_view, div.txt_ban, div.article_relation, ul.relation_list, div#bestnews_layer, div.article_keyword").unwrap();
+        body.select("div.reporter_view, div.txt_ban, div.bestnews, div.article_relation, ul.relation_list, div#bestnews_layer, div.article_keyword").empty();
+        body.select("div.reporter_view, div.txt_ban, div.bestnews, div.article_relation, ul.relation_list, div#bestnews_layer, div.article_keyword").unwrap();
         body.select("span.thumb").unwrap();
-
         text = Jsoup.clean(body.outerHtml(), Whitelist.basic().addAttributes("p", "class")
                 .addAttributes("span", "class")
                 .addAttributes("img", "data-src", "src")
                 .addAttributes("strong", "class")
                 .addAttributes("div", "class"));
 
-        spanner.registerHandler("span", new SpanTagHandler());
-        spanner.registerHandler("img", new ImageTagHandler());
-        spanner.registerHandler("strong", new StrongTagHandler());
-        spanner.registerHandler("div", new DivTagHandler());
-
+        HtmlParser parser = new HtmlParser(linearLayout, text);
+        lists = parser.preprocessing();
     }
 
-    private class DivTagHandler extends TagNodeHandler {
-        @Override
-        public void handleTagNode(TagNode node, SpannableStringBuilder builder, int start, int end) {
-            String class_name = node.getAttributeByName("class");
 
-            if (class_name != null && class_name.equals("wpsArticleHtmlComponent")) {
-                RelativeSizeSpan sizeSpan = new RelativeSizeSpan(1.2F);
-                StyleSpan span = new StyleSpan(Typeface.BOLD);
-                ForegroundColorSpan colorSpan = new ForegroundColorSpan(Color.parseColor("#3e508d"));
-                CustomSpan customSpan = new CustomSpan();
+    @Override
+    void addComponent() {
+        for (Map<String, String> map : lists) {
+            String tag_name = map.get("tag");
 
-                builder.setSpan(customSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                builder.setSpan(span, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                builder.setSpan(sizeSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                builder.setSpan(colorSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            if (tag_name.equals("img")) {
+                String src = map.get("src");
 
-                builder.insert(start, "\n");
-                builder.insert(end + 1, "\n\n\n");
+                if (src == null)
+                    src = map.get("data-src");
+
+                addImageViewComponent(src);
+            } else if (tag_name.equals("strong")) {
+                String class_name = map.get("class");
+
+                if (class_name.equals("sub_title")) {
+                    TextView textView = makeTextViewComponent(0, 0, 3, 3);
+                    textView.setText(map.get("content"));
+                    textView.setTextColor(Color.parseColor("#3e508d"));
+                    textView.setPadding(15, 0, 0, 0);
+                    textView.setTextSize(17);
+                    textView.setGravity(Gravity.CENTER_VERTICAL);
+                    textView.setBackground(ResourcesCompat.getDrawable(linearLayout.getResources(), R.drawable.donga_textborder, null));
+
+                    linearLayout.addView(textView);
+                }
+            } else if (tag_name.equals("span")) {
+                String class_name = map.get("class");
+
+                if (class_name != null && class_name.equals("txt")) {
+                    TextView textView = makeTextViewComponent(0, 0, 0, 3);
+                    textView.setText(map.get("content"));
+                    textView.setTextColor(Color.parseColor("#828282"));
+                    textView.setGravity(Gravity.CENTER_HORIZONTAL);
+                    textView.setTextSize(10);
+
+                    linearLayout.addView(textView);
+                }
+            } else if (tag_name.equals("div")) {
+                String class_name = map.get("class");
+
+                if (class_name != null) {
+                    if (class_name.equals("wpsArticleHtmlComponent")) {
+                        TextView textView = makeTextViewComponent(0, 0, 5, 5);
+                        textView.setText(map.get("content"));
+                        textView.setTextColor(Color.parseColor("#3e508d"));
+                        textView.setBackground(ResourcesCompat.getDrawable(linearLayout.getResources(),R.drawable.donga_wpsarticlehtmlcomponent,null));
+                        textView.setTextSize(17);
+
+                        linearLayout.addView(textView);
+                    }
+                }else{
+                    String content = map.get("content");
+
+                    if(!content.trim().isEmpty()) {
+                        TextView textView = makeTextViewComponent(0, 0, 3, 3);
+                        textView.setText(map.get("content"));
+                        textView.setTextColor(Color.parseColor("#000000"));
+                        textView.setTextSize(15);
+                        TextViewCompat.setTextAppearance(textView, android.R.style.TextAppearance_Material_Body1);
+
+                        linearLayout.addView(textView);
+                    }
+                }
+            } else {
+                String content = map.get("content");
+
+                if (!content.trim().isEmpty()) {
+                    TextView textView = makeTextViewComponent(0, 0, 3, 3);
+                    textView.setText(content);
+                    textView.setTextColor(Color.parseColor("#000000"));
+                    textView.setTextSize(15);
+                    TextViewCompat.setTextAppearance(textView, android.R.style.TextAppearance_Material_Body1);
+
+                    linearLayout.addView(textView);
+                }
             }
         }
     }
-
-    //위와 아래의 선을 그리기 위한 Span
-    private class CustomSpan extends DynamicDrawableSpan {
-        @Override
-        public Drawable getDrawable() {
-            return null;
-        }
-
-        @Override
-        public int getSize(@NonNull Paint paint, CharSequence text, int start, int end, @Nullable Paint.FontMetricsInt fm) {
-            return (int) paint.measureText(text, start, end);
-        }
-
-        @Override
-        public void draw(@NonNull Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, @NonNull Paint paint) {
-            int len = (int) paint.measureText(text, start, end);
-
-            paint.setColor(Color.parseColor("#cfcfcf"));
-            paint.setStrokeWidth(2);
-            canvas.drawLine(x, bottom + 20, len + x, bottom + 20, paint);
-
-            paint.setColor(Color.parseColor("#3e508d"));
-            paint.setStrokeWidth(2);
-            canvas.drawLine(x, top - 30, len + x, top - 30, paint);
-            canvas.drawText(text, start, end, x, y, paint);
-        }
-    }
-
-    private class SpanTagHandler extends TagNodeHandler {
-        @Override
-        public void handleTagNode(TagNode node, SpannableStringBuilder builder, int start, int end) {
-            String class_name = node.getAttributeByName("class");
-
-            if (class_name.equals("txt")) {
-                ForegroundColorSpan foregroundColorSpan = new ForegroundColorSpan(Color.parseColor("#828282"));
-                RelativeSizeSpan sizeSpan = new RelativeSizeSpan(0.8f);
-                AlignmentSpan.Standard alignmentSpan = new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER);
-
-                builder.setSpan(alignmentSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                builder.setSpan(foregroundColorSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                builder.setSpan(sizeSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                builder.insert(end, "\n\n");
-            }
-        }
-    }
-
-    private class StrongTagHandler extends TagNodeHandler {
-        @Override
-        public void handleTagNode(TagNode node, SpannableStringBuilder builder, int start, int end) {
-            String class_name = node.getAttributeByName("class");
-
-            if (class_name.equals("sub_title") || class_name.equals("article_view")) {
-                RelativeSizeSpan relativeSizeSpan = new RelativeSizeSpan(1.2F);
-                StyleSpan styleSpan = new StyleSpan(Typeface.BOLD);
-                ForegroundColorSpan foregroundColorSpan = new ForegroundColorSpan(Color.parseColor("#3e508d"));
-                LeadingMarginSpan.Standard leadingMarginSpan = new LeadingMarginSpan.Standard(20);
-                QuoteSpan quote = new QuoteSpan(Color.parseColor("#3e508d"));
-
-                builder.setSpan(quote, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                builder.setSpan(leadingMarginSpan, start, end, 0);
-                builder.setSpan(relativeSizeSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                builder.setSpan(styleSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                builder.setSpan(foregroundColorSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-                builder.insert(end, "\n");
-
-            }
-        }
-    }
-
 }
