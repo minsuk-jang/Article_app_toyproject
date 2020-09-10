@@ -100,9 +100,18 @@ public class ArticleCrawler extends AsyncTask<Object, List<ArticleVO>, List<Arti
         String today_article_photo = body.getString("today_article_photo");
         String today_article_txt = body.getString("today_article_txt");
 
-        Document document = Jsoup.connect(base_URL).get();
-        Elements elements = document.select(today_class);
 
+        Document doc = Jsoup.connect("https://www.donga.com/news/article/all/20200901/102736544/2").get();
+
+        String title = doc.select(today_title).text();
+        String img_url = doc.select(today_article_photo).attr("src");
+        String content = doc.select(today_article_txt).html();
+
+        list.add(new ArticleVO(this.title,img_url,title,content));
+        publishProgress(list);
+
+        /*
+        Elements elements = Jsoup.connect(base_URL).get().select(today_class);
         for (Element e : elements) {
 
             //todo 크롤링 시, 오류 처리
@@ -123,7 +132,7 @@ public class ArticleCrawler extends AsyncTask<Object, List<ArticleVO>, List<Arti
             }
 
         }
-
+*/
     }
 
     //JSON 파일을 읽어 들인다

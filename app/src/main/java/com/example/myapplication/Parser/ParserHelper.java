@@ -16,7 +16,7 @@ public class ParserHelper {
     //todo 개선 필
     public static void attachCompoent(LinearLayout v, String kind, String article){
         if (kind.equals(DONGA)) {
-            new DongaParser(v, article).addComponent();
+            new DongaParser(v, article).init();
         }else if(kind.equals(JOONGANG)){
           //  return new JoongangParser(v,article).getString();
         }
