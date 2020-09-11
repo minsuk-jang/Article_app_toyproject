@@ -101,6 +101,7 @@ public class ArticleCrawler extends AsyncTask<Object, List<ArticleVO>, List<Arti
         String today_article_txt = body.getString("today_article_txt");
 
 
+        //TEST용 데이터
         Document doc = Jsoup.connect("https://www.donga.com/news/article/all/20200901/102736544/2").get();
 
         String title = doc.select(today_title).text();
@@ -110,8 +111,8 @@ public class ArticleCrawler extends AsyncTask<Object, List<ArticleVO>, List<Arti
         list.add(new ArticleVO(this.title,img_url,title,content));
         publishProgress(list);
 
-        /*
-        Elements elements = Jsoup.connect(base_URL).get().select(today_class);
+        //실제 데이터
+       /* Elements elements = Jsoup.connect(base_URL).get().select(today_class);
         for (Element e : elements) {
 
             //todo 크롤링 시, 오류 처리
@@ -121,6 +122,7 @@ public class ArticleCrawler extends AsyncTask<Object, List<ArticleVO>, List<Arti
                 String img_url = temp_document.select(today_article_photo).attr("src");
                 String title = temp_document.select(today_title).text();
                 String content = temp_document.select(today_article_txt).html();
+                content = replaceAll(content);
 
                 list.add(new ArticleVO(this.title,img_url, title,content));
 
@@ -131,8 +133,8 @@ public class ArticleCrawler extends AsyncTask<Object, List<ArticleVO>, List<Arti
                 ee.printStackTrace();
             }
 
-        }
-*/
+        }*/
+
     }
 
     //JSON 파일을 읽어 들인다
@@ -161,5 +163,14 @@ public class ArticleCrawler extends AsyncTask<Object, List<ArticleVO>, List<Arti
         return ret;
     }
 
+    private String replaceAll(String text){
+        text = text.replaceAll("&gt;", ">");
+        text = text.replaceAll("&lt;", "<");
+        text = text.replaceAll("&nbsp;", " ");
+        text = text.replaceAll("&amp;", "&");
+        text = text.replaceAll("&quot;", "\"");
+
+        return text;
+    }
 
 }
