@@ -4,8 +4,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager.widget.ViewPager;
 
+import android.graphics.Rect;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.material.tabs.TabLayout;
@@ -19,6 +28,7 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
     private Toolbar toolbar;
     private TabLayout tabLayout;
     private ViewPager viewPager;
+    private EditText editText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +42,57 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
         tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         viewPager = (ViewPager) findViewById(R.id.viewpager);
 
+        editText = (EditText) findViewById(R.id.search);
+        editText.clearFocus();
+        editText.setTextIsSelectable(true);
+        editText.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN) {
+                    Toast.makeText(getApplicationContext(), "Enter pressed", Toast.LENGTH_SHORT).show();
+                    if (v instanceof EditText) {
+                        hideKeyBoard((EditText) v);
+                    }
+                    return true;
+                }
+                return false;
+            }
+        });
         init(article_list);
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+            View view = getCurrentFocus();
+
+            //EditView를 눌렀는지 확인
+            if (view instanceof EditText) {
+                Rect rect = new Rect();
+                view.getGlobalVisibleRect(rect);
+
+                //범위 내에 없을 경우
+                if (!rect.contains((int) ev.getRawX(), (int) ev.getRawY())) {
+                    hideKeyBoard((EditText) view);
+                } else {
+                    showKeyBoard((EditText) view);
+                }
+            }
+        }
+        Log.d("jms8732", "dispatchTouchEvent");
+        return super.dispatchTouchEvent(ev);
+    }
+
+    private void showKeyBoard(EditText editText) {
+        InputMethodManager manager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        manager.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
+        editText.requestFocus();
+    }
+
+    private void hideKeyBoard(EditText editText) {
+        InputMethodManager manager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        manager.hideSoftInputFromWindow(editText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        editText.clearFocus();
     }
 
     //초기 설정
