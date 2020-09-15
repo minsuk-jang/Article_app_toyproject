@@ -101,7 +101,7 @@ public class ArticleCrawler extends AsyncTask<Object, List<ArticleVO>, List<Arti
         String today_article_txt = body.getString("today_article_txt");
 
 
-        //TEST용 데이터
+       /* //TEST용 데이터
         Document doc = Jsoup.connect("https://www.donga.com/news/article/all/20200901/102736544/2").get();
 
         String title = doc.select(today_title).text();
@@ -109,10 +109,10 @@ public class ArticleCrawler extends AsyncTask<Object, List<ArticleVO>, List<Arti
         String content = doc.select(today_article_txt).html();
 
         list.add(new ArticleVO(this.title,img_url,title,content));
-        publishProgress(list);
+        publishProgress(list);*/
 
         //실제 데이터
-       /* Elements elements = Jsoup.connect(base_URL).get().select(today_class);
+        Elements elements = Jsoup.connect(base_URL).get().select(today_class);
         for (Element e : elements) {
 
             //todo 크롤링 시, 오류 처리
@@ -133,7 +133,7 @@ public class ArticleCrawler extends AsyncTask<Object, List<ArticleVO>, List<Arti
                 ee.printStackTrace();
             }
 
-        }*/
+        }
 
     }
 

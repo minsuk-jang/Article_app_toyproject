@@ -42,8 +42,8 @@
                         android:layout_height="wrap_content"
                         android:background="@android:color/transparent"
                         android:hint="검색어를 입력하세요"
+                        android:maxLines="1"
                         android:textColor="#FFFFFF"
-                        android:focusable="false"
                         android:textColorHint="#FFFFFF" />
                 </androidx.appcompat.widget.Toolbar>
 
