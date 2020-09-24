@@ -1,10 +1,18 @@
 package com.example.myapplication.Parser;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.view.Gravity;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.MediaController;
 import android.widget.TextView;
+import android.widget.VideoView;
 
 import androidx.core.widget.TextViewCompat;
 
@@ -26,9 +34,8 @@ public class JoongangParser extends BaseParser {
     void init() {
         Document body = Jsoup.parse(text);
 
-        body.select("div.ab_related_article, ab_photo.photo_center").empty();
-        body.select("div.ab_related_article, ab_photo.photo_center").unwrap();
-
+       // body.select("div.ab_related_article, ab_photo.photo_center, div.ovp_recommend").empty();
+       // body.select("div.ab_related_article, ab_photo.photo_center, div.ovp_recommend").unwrap()
         totalTagNode = cleaner.clean(body.html());
         addComponent(totalTagNode);
 
@@ -50,8 +57,10 @@ public class JoongangParser extends BaseParser {
             } else {
                 if (obj instanceof TagNode) {
                     TagNode temp = (TagNode) obj;
+
                     String tag_name = temp.getName();
                     String class_name = temp.getAttributeByName("class");
+
 
                     if (tag_name.equals("script") || tag_name.equals("a"))
                         continue;
@@ -70,24 +79,57 @@ public class JoongangParser extends BaseParser {
                         makeTable(linearLayout, tagNode);
 
                         this.linearLayout.addView(linearLayout);
+                    } else if (class_name != null && class_name.equals("tag_vod")) {
+                        String data_id = temp.getAttributeByName("data-id");
+
+                        int end = data_id.indexOf("?");
+                        data_id = data_id.substring(0,end);
+                        String src = "https://oya.joins.com/bc_iframe.html?videoId=" + data_id;
+
+                        WebView webView = new WebView(context);
+                        webView.setLayoutParams(getParams(0,5,0,5));
+                        webView.getSettings().setJavaScriptEnabled(true);
+                        webView.setWebChromeClient(new WebChromeClient());
+                        webView.loadUrl(src);
+
+                        linearLayout.addView(webView);
+
                     } else if (class_name != null && class_name.equals("ab_sub_heading")) {
                         TextView textView = makeTextView(0, 50, 0, 15, 30);
-                        textView.setPadding(0,20,0,20);
+                        textView.setPadding(0, 20, 0, 20);
                         textView.setBackground(getDrawable(R.drawable.joongang_ab_sub_heading));
                         textView.setTextColor(Color.parseColor("#000000"));
                         giveAttribute(temp, textView);
 
                         linearLayout.addView(textView);
                     } else if (class_name != null && class_name.equals("ab_subtitle")) {
-                        TextView textView = makeTextView(0,20,0,20,13);
+                        TextView textView = makeTextView(0, 20, 0, 20, 13);
                         textView.setGravity(Gravity.CENTER_VERTICAL);
                         textView.setTextColor(Color.parseColor("#3C3E40"));
-                        textView.setPadding(20,0,0,0);
+                        textView.setPadding(20, 0, 0, 0);
                         textView.setBackground(getDrawable(R.drawable.joongang_ab_subtitle));
-                        giveAttribute(temp,textView);
+                        giveAttribute(temp, textView);
 
                         linearLayout.addView(textView);
 
+                    } else if (class_name != null && class_name.equals("ab_quotation")) {
+                        LinearLayout linearLayout = makeLinearLayout(0, 10, 0, 10, LinearLayout.HORIZONTAL);
+                        linearLayout.setGravity(Gravity.CENTER_VERTICAL);
+                        ImageView quote = new ImageView(context);
+                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                        params.setMargins(0, 0, 5, 0);
+                        quote.setLayoutParams(params);
+                        quote.setImageResource(R.drawable.quote_black);
+
+                        TextView textView = makeTextView(20, 0, 0, 0, 15);
+                        textView.setTextColor(Color.parseColor("#000000"));
+                        giveAttribute(temp, textView);
+
+                        linearLayout.addView(quote);
+                        linearLayout.addView(textView);
+
+
+                        this.linearLayout.addView(linearLayout);
                     } else if (class_name != null && class_name.equals("caption")) {
                         TextView textView = makeTextView(0, 0, 0, 3, 10);
                         textView.setTextColor(Color.parseColor("#737475"));
@@ -155,7 +197,13 @@ public class JoongangParser extends BaseParser {
 
                 if (!content.isEmpty()) {
                     content = replaceAll(content);
-                    textView.setText(content);
+                    String temp = textView.getText().toString();
+
+                    //이전에 내용이 존재할 경우
+                    if(temp != null)
+                        textView.setText(temp + content);
+                    else
+                        textView.setText(content);
                 }
 
             } else {
@@ -169,11 +217,11 @@ public class JoongangParser extends BaseParser {
                     }
 
                     if (tag.matches("[Hh][0-9]+$")) {
-                        textResize(textView, tag.charAt(1)-'0');
+                        textResize(textView, tag.charAt(1) - '0');
                     }
 
-                    if(tag.equals("p")){
-                        textView.setTypeface(null,Typeface.BOLD);
+                    if (tag.equals("p")) {
+                        textView.setTypeface(null, Typeface.BOLD);
                     }
 
                     giveAttribute(temp, textView);
@@ -185,22 +233,22 @@ public class JoongangParser extends BaseParser {
     }
 
     private void textResize(TextView textView, int size) {
-        int sz = (int)textView.getTextSize();
+        int sz = (int) textView.getTextSize();
         switch (size) {
             case 1:
-                sz = 21;
+                sz = 16;
                 break;
             case 2:
-                sz = 19;
-                break;
-            case 3:
-                sz = 17;
-                break;
-            case 4:
                 sz = 15;
                 break;
-            case 5:
+            case 3:
+                sz = 14;
+                break;
+            case 4:
                 sz = 13;
+                break;
+            case 5:
+                sz = 12;
                 break;
             case 6:
                 sz = 11;

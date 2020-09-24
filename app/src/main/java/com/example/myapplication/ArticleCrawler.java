@@ -12,6 +12,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.DataVO.ArticleVO;
 import com.example.myapplication.Parser.ParserHelper;
 
+import org.htmlcleaner.CleanerProperties;
+import org.htmlcleaner.HtmlCleaner;
+import org.htmlcleaner.TagNode;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Connection;
@@ -25,6 +28,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.List;
 
 public class ArticleCrawler extends AsyncTask<Object, List<ArticleVO>, List<ArticleVO>> {
@@ -100,18 +104,17 @@ public class ArticleCrawler extends AsyncTask<Object, List<ArticleVO>, List<Arti
         String today_article_photo = body.getString("today_article_photo");
         String today_article_txt = body.getString("today_article_txt");
 
-
-       /* //TEST용 데이터
-        Document doc = Jsoup.connect("https://www.donga.com/news/article/all/20200901/102736544/2").get();
+        //TEST용 데이터
+        Document doc = Jsoup.connect("https://news.joins.com/article/23873691?cloc=joongang-home-newslistleft").get();
 
         String title = doc.select(today_title).text();
         String img_url = doc.select(today_article_photo).attr("src");
         String content = doc.select(today_article_txt).html();
 
         list.add(new ArticleVO(this.title,img_url,title,content));
-        publishProgress(list);*/
+        publishProgress(list);
 
-        //실제 데이터
+     /*   //실제 데이터
         Elements elements = Jsoup.connect(base_URL).get().select(today_class);
         for (Element e : elements) {
 
@@ -133,8 +136,7 @@ public class ArticleCrawler extends AsyncTask<Object, List<ArticleVO>, List<Arti
                 ee.printStackTrace();
             }
 
-        }
-
+        }*/
     }
 
     //JSON 파일을 읽어 들인다
