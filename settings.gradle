@@ -1,3 +1,2 @@
-include ':test'
 include ':app'
 rootProject.name = "My Application"
