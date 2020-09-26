@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ArticleCrawler extends AsyncTask<Object, List<ArticleVO>, List<ArticleVO>> {
@@ -104,15 +105,22 @@ public class ArticleCrawler extends AsyncTask<Object, List<ArticleVO>, List<Arti
         String today_article_photo = body.getString("today_article_photo");
         String today_article_txt = body.getString("today_article_txt");
 
+        List<String> temp = new ArrayList<>();
+        temp.add("https://news.joins.com/article/23881743?cloc=joongang-home-newslistleft");
+        temp.add("https://news.joins.com/article/23881795?cloc=joongang-home-newslistleft");
+        temp.add("https://news.joins.com/article/23873691?cloc=joongang-home-newslistleft");
         //TEST용 데이터
-        Document doc = Jsoup.connect("https://news.joins.com/article/23873691?cloc=joongang-home-newslistleft").get();
+        for(String src : temp) {
+            Document doc = Jsoup.connect(src).get();
+            //https://news.joins.com/article/23881795?cloc=joongang-home-newslistleft
+            //https://news.joins.com/article/23881743?cloc=joongang-home-newslistleft
+            String title = doc.select(today_title).text();
+            String img_url = doc.select(today_article_photo).attr("src");
+            String content = doc.select(today_article_txt).html();
 
-        String title = doc.select(today_title).text();
-        String img_url = doc.select(today_article_photo).attr("src");
-        String content = doc.select(today_article_txt).html();
-
-        list.add(new ArticleVO(this.title,img_url,title,content));
-        publishProgress(list);
+            list.add(new ArticleVO(this.title, img_url, title, content));
+            publishProgress(list);
+        }
 
      /*   //실제 데이터
         Elements elements = Jsoup.connect(base_URL).get().select(today_class);

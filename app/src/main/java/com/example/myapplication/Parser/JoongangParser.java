@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.text.Spanned;
+import android.text.style.StyleSpan;
 import android.view.Gravity;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -34,8 +36,8 @@ public class JoongangParser extends BaseParser {
     void init() {
         Document body = Jsoup.parse(text);
 
-       // body.select("div.ab_related_article, ab_photo.photo_center, div.ovp_recommend").empty();
-       // body.select("div.ab_related_article, ab_photo.photo_center, div.ovp_recommend").unwrap()
+        // body.select("div.ab_related_article, ab_photo.photo_center, div.ovp_recommend").empty();
+        // body.select("div.ab_related_article, ab_photo.photo_center, div.ovp_recommend").unwrap()
         totalTagNode = cleaner.clean(body.html());
         addComponent(totalTagNode);
 
@@ -61,7 +63,6 @@ public class JoongangParser extends BaseParser {
                     String tag_name = temp.getName();
                     String class_name = temp.getAttributeByName("class");
 
-
                     if (tag_name.equals("script") || tag_name.equals("a"))
                         continue;
 
@@ -70,29 +71,21 @@ public class JoongangParser extends BaseParser {
 
                         if (src == null)
                             src = temp.getAttributeByName("data-src");
-                        addImageTagComponent(src);
-                    } else if (tag_name != null && tag_name.equals("table")) {
+
+                        linearLayout.addView(makeImageView(src));
+                    } else if (class_name != null && class_name.equals("ab_box_article")) {
                         LinearLayout linearLayout = makeLinearLayout(4, 30, 4, 30, LinearLayout.VERTICAL);
                         linearLayout.setBackground(getDrawable(R.drawable.dongatableborder));
                         linearLayout.setPadding(30, 0, 30, 0);
 
-                        makeTable(linearLayout, tagNode);
+                        makeBox(linearLayout, temp);
 
                         this.linearLayout.addView(linearLayout);
                     } else if (class_name != null && class_name.equals("tag_vod")) {
                         String data_id = temp.getAttributeByName("data-id");
 
-                        int end = data_id.indexOf("?");
-                        data_id = data_id.substring(0,end);
-                        String src = "https://oya.joins.com/bc_iframe.html?videoId=" + data_id;
-
-                        WebView webView = new WebView(context);
-                        webView.setLayoutParams(getParams(0,5,0,5));
-                        webView.getSettings().setJavaScriptEnabled(true);
-                        webView.setWebChromeClient(new WebChromeClient());
-                        webView.loadUrl(src);
-
-                        linearLayout.addView(webView);
+                        //todo WebView 높이 사이즈 재조정 필요요
+                        linearLayout.addView(makeWebView(0, 5, 0, 10, 800, makeUrl(data_id)));
 
                     } else if (class_name != null && class_name.equals("ab_sub_heading")) {
                         TextView textView = makeTextView(0, 50, 0, 15, 30);
@@ -111,7 +104,6 @@ public class JoongangParser extends BaseParser {
                         giveAttribute(temp, textView);
 
                         linearLayout.addView(textView);
-
                     } else if (class_name != null && class_name.equals("ab_quotation")) {
                         LinearLayout linearLayout = makeLinearLayout(0, 10, 0, 10, LinearLayout.HORIZONTAL);
                         linearLayout.setGravity(Gravity.CENTER_VERTICAL);
@@ -128,7 +120,6 @@ public class JoongangParser extends BaseParser {
                         linearLayout.addView(quote);
                         linearLayout.addView(textView);
 
-
                         this.linearLayout.addView(linearLayout);
                     } else if (class_name != null && class_name.equals("caption")) {
                         TextView textView = makeTextView(0, 0, 0, 3, 10);
@@ -138,14 +129,13 @@ public class JoongangParser extends BaseParser {
                         linearLayout.addView(textView);
                     } else
                         addComponent(temp);
-
                 }
             }
 
         }
     }
 
-    private void makeTable(LinearLayout linearLayout, TagNode tagNode) {
+    private void makeBox(LinearLayout linearLayout, TagNode tagNode) {
         for (Object obj : tagNode.getAllChildren()) {
             if (obj instanceof ContentNode) {
                 ContentNode contentNode = (ContentNode) obj;
@@ -153,23 +143,36 @@ public class JoongangParser extends BaseParser {
 
                 if (!content.isEmpty()) {
                     content = replaceAll(content);
-                    TextView textView = makeTextView(0, 10, 0, 10, 12);
-                    TextViewCompat.setTextAppearance(textView, R.style.TextAppearance_AppCompat_Body1);
+                    TextView textView = makeTextView(0, 5, 0, 5, 10);
                     textView.setText(content);
-
-                    if (!table_first) {
-                        table_first = true;
-                        textView.setBackground(getDrawable(R.drawable.dongatablefirsttext));
-                        textView.setTextColor(Color.parseColor("#3d65de"));
-                        textView.setPadding(0, 30, 0, 15);
-                    }
-
                     linearLayout.addView(textView);
                 }
             } else {
                 if (obj instanceof TagNode) {
                     TagNode tagNode1 = (TagNode) obj;
-                    makeTable(linearLayout, tagNode1);
+                    String class_name = tagNode1.getAttributeByName("class");
+                    String tag_name = tagNode1.getName();
+
+
+                    if (tag_name != null && tag_name.equals("img")) {
+                        String src = tagNode1.getAttributeByName("src");
+                        if (src == null)
+                            src = tagNode1.getAttributeByName("data-src");
+                        linearLayout.addView(makeImageView(src));
+                    } else if (class_name != null && class_name.equals("ab_box_title")) {
+                        TextView textView = makeTextView(0, 10, 0, 10, 13);
+                        textView.setTextColor(Color.parseColor("#5d91c3"));
+                        textView.setTypeface(null, Typeface.BOLD);
+                        giveAttribute(tagNode1, textView);
+
+                        linearLayout.addView(textView);
+                    } else if (class_name != null && class_name.equals("ab_box_content")) {
+                        TextView textView = makeTextView(0, 5, 0, 5, 10);
+                        giveAttribute(tagNode1, textView);
+
+                        linearLayout.addView(textView);
+                    }else
+                        makeBox(linearLayout,tagNode1);
                 }
             }
         }
@@ -195,12 +198,22 @@ public class JoongangParser extends BaseParser {
 
                 String content = contentNode.getContent().trim();
 
+                if(tagNode.getName().equals("br")){
+                    content = replaceAll(content);
+                    String temp = textView.getText().toString();
+
+                    if (temp != null)
+                        textView.setText(temp + content);
+                    else
+                        textView.setText(content);
+                }
+
                 if (!content.isEmpty()) {
                     content = replaceAll(content);
                     String temp = textView.getText().toString();
 
                     //이전에 내용이 존재할 경우
-                    if(temp != null)
+                    if (temp != null)
                         textView.setText(temp + content);
                     else
                         textView.setText(content);
@@ -232,39 +245,4 @@ public class JoongangParser extends BaseParser {
         return;
     }
 
-    private void textResize(TextView textView, int size) {
-        int sz = (int) textView.getTextSize();
-        switch (size) {
-            case 1:
-                sz = 16;
-                break;
-            case 2:
-                sz = 15;
-                break;
-            case 3:
-                sz = 14;
-                break;
-            case 4:
-                sz = 13;
-                break;
-            case 5:
-                sz = 12;
-                break;
-            case 6:
-                sz = 11;
-                break;
-        }
-
-        textView.setTextSize(sz);
-    }
-
-    private String replaceAll(String text) {
-        text = text.replaceAll("&gt;", ">");
-        text = text.replaceAll("&lt;", "<");
-        text = text.replaceAll("&nbsp;", " ");
-        text = text.replaceAll("&amp;", "&");
-        text = text.replaceAll("&quot;", "\"");
-
-        return text;
-    }
 }

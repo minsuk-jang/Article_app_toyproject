@@ -70,9 +70,14 @@ public class DongaParser extends BaseParser {
                     if (tag_name.equals("script") || tag_name.equals("a"))
                         continue;
 
-                    if (tag_name != null && tag_name.equals("img"))
-                        addImageTagComponent(temp.getAttributeByName("src"));
-                    else if (tag_name != null && tag_name.equals("table")) {
+                    if (tag_name != null && tag_name.equals("img")) {
+                        String src = temp.getAttributeByName("src");
+
+                        if (src == null)
+                            src = temp.getAttributeByName("data-src");
+
+                        linearLayout.addView(makeImageView(src));
+                    } else if (tag_name != null && tag_name.equals("table")) {
                         LinearLayout linearLayout = makeLinearLayout(4, 30, 4, 30, LinearLayout.VERTICAL);
                         linearLayout.setBackground(getDrawable(R.drawable.dongatableborder));
                         linearLayout.setPadding(30, 0, 30, 0);
@@ -80,25 +85,24 @@ public class DongaParser extends BaseParser {
                         makeTable(linearLayout, tagNode);
 
                         this.linearLayout.addView(linearLayout);
-                    } else if(tag_name != null && tag_name.equals("b")){
-                      TextView textView = makeTextView(0,15,0,15,15);
-                      textView.setTypeface(null,Typeface.BOLD);
-                      textView.setTextColor(Color.parseColor("#000000"));
-                      giveAttribute(temp,textView);
+                    } else if (tag_name != null && tag_name.equals("b")) {
+                        TextView textView = makeTextView(0, 15, 0, 15, 15);
+                        textView.setTypeface(null, Typeface.BOLD);
+                        textView.setTextColor(Color.parseColor("#000000"));
+                        giveAttribute(temp, textView);
 
-                      linearLayout.addView(textView);
-                    } else if(class_name != null && class_name.equals("sub_title")){
-                        TextView textView =makeTextView(0,30,0,30,17);
+                        if (!textView.getText().toString().isEmpty())
+                            linearLayout.addView(textView);
+                    } else if (class_name != null && class_name.equals("sub_title")) {
+                        TextView textView = makeTextView(0, 30, 0, 30, 17);
                         textView.setBackground(getDrawable(R.drawable.donga_textborder));
-                        textView.setPadding(20,0,0,0);
+                        textView.setPadding(20, 0, 0, 0);
                         textView.setGravity(Gravity.CENTER_VERTICAL);
                         textView.setTextColor(Color.parseColor("#3e508d"));
-                        giveAttribute(temp,textView);
+                        giveAttribute(temp, textView);
 
                         linearLayout.addView(textView);
-                    }
-
-                    else if (class_name != null && class_name.equals("wpsArticleHtmlComponent")) {
+                    } else if (class_name != null && class_name.equals("wpsArticleHtmlComponent")) {
                         TextView textView = makeTextView(0, 10, 0, 10, 15);
                         textView.setBackground(getDrawable(R.drawable.donga_wpsarticlehtmlcomponent));
                         textView.setPadding(0, 30, 0, 30);
@@ -112,9 +116,8 @@ public class DongaParser extends BaseParser {
                         giveAttribute(temp, textView);
 
                         linearLayout.addView(textView);
-                    } else
+                    }else
                         addComponent(temp);
-
                 }
             }
 
@@ -181,6 +184,9 @@ public class DongaParser extends BaseParser {
                     TagNode temp = (TagNode) obj;
                     String tag = temp.getName();
 
+                    if (tag.equals("a"))
+                        continue;
+
                     if (tag.equals("font")) {
                         String color = temp.getAttributeByName("color");
                         textView.setTextColor(Color.parseColor(color));
@@ -194,13 +200,4 @@ public class DongaParser extends BaseParser {
         return;
     }
 
-    private String replaceAll(String text) {
-        text = text.replaceAll("&gt;", ">");
-        text = text.replaceAll("&lt;", "<");
-        text = text.replaceAll("&nbsp;", " ");
-        text = text.replaceAll("&amp;", "&");
-        text = text.replaceAll("&quot;", "\"");
-
-        return text;
-    }
 }
