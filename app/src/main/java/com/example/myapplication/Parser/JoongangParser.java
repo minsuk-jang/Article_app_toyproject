@@ -4,9 +4,13 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.nfc.Tag;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.view.Gravity;
+import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -36,213 +40,164 @@ public class JoongangParser extends BaseParser {
     void init() {
         Document body = Jsoup.parse(text);
 
-        // body.select("div.ab_related_article, ab_photo.photo_center, div.ovp_recommend").empty();
-        // body.select("div.ab_related_article, ab_photo.photo_center, div.ovp_recommend").unwrap()
+        body.select("div.ab_related_article, ab_photo.photo_center, div.ovp_recommend").empty();
+        body.select("div.ab_related_article, ab_photo.photo_center, div.ovp_recommend").unwrap();
         totalTagNode = cleaner.clean(body.html());
-        addComponent(totalTagNode);
 
+        for (Object obj : totalTagNode.getAllChildren()) {
+            addComponent(linearLayout,(TagNode) obj);
+        }
     }
 
     @Override
-    void addComponent(TagNode tagNode) {
+    void addComponent(LinearLayout linearLayout, TagNode tagNode) {
         for (Object obj : tagNode.getAllChildren()) {
             if (obj instanceof ContentNode) {
                 //현재 내용이 존재할 경우,
                 ContentNode contentNode = (ContentNode) obj;
                 String content = contentNode.getContent().trim();
-
                 if (!content.isEmpty()) {
                     content = replaceAll(content);
-                    addTextTagComponent(content);
-                }
 
+                    int len = content.length();
+                    ssb.append(content);
+                    String tag_name = tagNode.getName();
+
+                    if (tag_name.equals("b") || tag_name.equals("strong")) {
+                        StyleSpan styleSpan = new StyleSpan(Typeface.BOLD);
+                        ssb.setSpan(styleSpan,ssb.length()-len,ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    }
+                }
             } else {
                 if (obj instanceof TagNode) {
                     TagNode temp = (TagNode) obj;
 
                     String tag_name = temp.getName();
                     String class_name = temp.getAttributeByName("class");
+                    String style_name = temp.getAttributeByName("style");
 
                     if (tag_name.equals("script") || tag_name.equals("a"))
                         continue;
 
-                    if (tag_name != null && tag_name.equals("img")) {
-                        String src = temp.getAttributeByName("src");
+                    if(style_name != null){
+                        if(style_name.contains("display: none"))
+                            continue;
+                    }
 
-                        if (src == null)
-                            src = temp.getAttributeByName("data-src");
+                    if (tag_name != null) {
+                        View view = null;
+                        if (tag_name.equals("img")) { //이미지 추가
+                            String src = temp.getAttributeByName("src");
 
-                        linearLayout.addView(makeImageView(src));
-                    } else if (class_name != null && class_name.equals("ab_box_article")) {
-                        LinearLayout linearLayout = makeLinearLayout(4, 30, 4, 30, LinearLayout.VERTICAL);
-                        linearLayout.setBackground(getDrawable(R.drawable.dongatableborder));
-                        linearLayout.setPadding(30, 0, 30, 0);
+                            if (src == null)
+                                src = temp.getAttributeByName("data-src");
 
-                        makeBox(linearLayout, temp);
+                            view = makeImageView(src);
+                        } else if (tag_name.equals("br") && !ssb.toString().isEmpty()) {//br로 나누기때문에 아래와 같이 진행
+                            TextView textView = makeTextView(0, 2, 0, 2, 11);
+                            textView.setText(ssb);
 
-                        this.linearLayout.addView(linearLayout);
-                    } else if (class_name != null && class_name.equals("tag_vod")) {
-                        String data_id = temp.getAttributeByName("data-id");
+                            view = textView;
+                            ssb.delete(0, ssb.length());
+                        }
 
-                        //todo WebView 높이 사이즈 재조정 필요요
-                        linearLayout.addView(makeWebView(0, 5, 0, 10, 800, makeUrl(data_id)));
+                        if (view != null) {
+                            linearLayout.addView(view);
+                            continue;
+                        }
+                    }
 
-                    } else if (class_name != null && class_name.equals("ab_sub_heading")) {
-                        TextView textView = makeTextView(0, 50, 0, 15, 30);
-                        textView.setPadding(0, 20, 0, 20);
-                        textView.setBackground(getDrawable(R.drawable.joongang_ab_sub_heading));
-                        textView.setTextColor(Color.parseColor("#000000"));
-                        giveAttribute(temp, textView);
+                    if (class_name != null) {
+                        View view = null;
+                        if (class_name.equals("tag_vod")) { //영상에 관련된 뷰
+                            String data_id = temp.getAttributeByName("data-id");
 
-                        linearLayout.addView(textView);
-                    } else if (class_name != null && class_name.equals("ab_subtitle")) {
-                        TextView textView = makeTextView(0, 20, 0, 20, 13);
-                        textView.setGravity(Gravity.CENTER_VERTICAL);
-                        textView.setTextColor(Color.parseColor("#3C3E40"));
-                        textView.setPadding(20, 0, 0, 0);
-                        textView.setBackground(getDrawable(R.drawable.joongang_ab_subtitle));
-                        giveAttribute(temp, textView);
+                            //todo 높이 재조정 필요
+                            view = makeWebView(0, 5, 0, 10, 800, makeUrl(data_id));
+                        } else { //그 외 나머지 처리
+                            SpannableStringBuilder ssb = new SpannableStringBuilder();
+                            if (class_name.equals("caption")) {
+                                TextView textView = makeTextView(0, 0, 0, 3, 8);
+                                textView.setTextColor(Color.parseColor("#737475"));
 
-                        linearLayout.addView(textView);
-                    } else if (class_name != null && class_name.equals("ab_quotation")) {
-                        LinearLayout linearLayout = makeLinearLayout(0, 10, 0, 10, LinearLayout.HORIZONTAL);
-                        linearLayout.setGravity(Gravity.CENTER_VERTICAL);
-                        ImageView quote = new ImageView(context);
-                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                        params.setMargins(0, 0, 5, 0);
-                        quote.setLayoutParams(params);
-                        quote.setImageResource(R.drawable.quote_black);
+                                adjustAttribute(temp,ssb);
+                                textView.setText(ssb);
+                                view = textView;
+                            }else if(class_name.equals("ab_subtitle")){
+                                TextView textView = makeTextView(0,20,0,20,13);
+                                textView.setGravity(Gravity.CENTER_VERTICAL);
+                                textView.setTextColor(Color.parseColor("#3c3e40"));
+                                textView.setPadding(20, 0, 0, 0);
+                                textView.setBackground(getDrawable(R.drawable.joongang_ab_subtitle));
 
-                        TextView textView = makeTextView(20, 0, 0, 0, 15);
-                        textView.setTextColor(Color.parseColor("#000000"));
-                        giveAttribute(temp, textView);
+                                adjustAttribute(temp,ssb);
+                                textView.setText(ssb);
+                                view = textView;
+                            } else if (class_name.equals("ab_sub_heading")) {
+                                TextView textView  = makeTextView(0, 50, 15, 15, 30);
+                                textView.setPadding(0, 20, 0, 20);
+                                textView.setBackground(getDrawable(R.drawable.joongang_ab_sub_heading));
 
-                        linearLayout.addView(quote);
-                        linearLayout.addView(textView);
+                                adjustAttribute(temp,ssb);
+                                textView.setText(ssb);
+                                view = textView;
+                            }else if(class_name.equals("ab_box_article")){
+                                LinearLayout temp_layout = makeLinearLayout(4, 30, 4, 30, LinearLayout.VERTICAL);
+                                temp_layout.setBackground(getDrawable(R.drawable.dongatableborder));
+                                temp_layout.setPadding(30, 20, 30, 20);
 
-                        this.linearLayout.addView(linearLayout);
-                    } else if (class_name != null && class_name.equals("caption")) {
-                        TextView textView = makeTextView(0, 0, 0, 3, 10);
-                        textView.setTextColor(Color.parseColor("#737475"));
-                        giveAttribute(temp, textView);
+                                addComponent(temp_layout,temp);
+                                linearLayout.addView(temp_layout);
+                                continue;
+                            }else if(class_name.equals("ab_box_titleline")){
+                                TextView textView = makeTextView(0,10,0,10,13);
+                                textView.setTextColor(Color.parseColor("#5d81c3"));
+                                adjustAttribute(temp,ssb);
 
-                        linearLayout.addView(textView);
-                    } else
-                        addComponent(temp);
+                                textView.setText(ssb);
+                                view = textView;
+                            }
+                        }
+
+                        if (view != null) {
+                            linearLayout.addView(view);
+                            continue;
+                        }
+                    }
+
+                    addComponent(linearLayout, temp);
                 }
             }
 
         }
     }
 
-    private void makeBox(LinearLayout linearLayout, TagNode tagNode) {
+    private void adjustAttribute(TagNode tagNode, SpannableStringBuilder spannableStringBuilder) {
         for (Object obj : tagNode.getAllChildren()) {
             if (obj instanceof ContentNode) {
                 ContentNode contentNode = (ContentNode) obj;
                 String content = contentNode.getContent().trim();
+                String tag_name = tagNode.getName();
+
+                int start = ssb.length();
+                int end = start + content.length();
 
                 if (!content.isEmpty()) {
-                    content = replaceAll(content);
-                    TextView textView = makeTextView(0, 5, 0, 5, 10);
-                    textView.setText(content);
-                    linearLayout.addView(textView);
+                    spannableStringBuilder.append(content);
+
+                    if (tag_name.equals("b") || tag_name.equals("strong")) {
+                        StyleSpan styleSpan = new StyleSpan(Typeface.BOLD);
+                        spannableStringBuilder.setSpan(styleSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    } else if (tag_name.matches("[Hh][0-9]+$")) {
+                        RelativeSizeSpan relativeSizeSpan = new RelativeSizeSpan(convertSize(tag_name.charAt(1) - '0'));
+                        spannableStringBuilder.setSpan(relativeSizeSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    }
                 }
-            } else {
-                if (obj instanceof TagNode) {
-                    TagNode tagNode1 = (TagNode) obj;
-                    String class_name = tagNode1.getAttributeByName("class");
-                    String tag_name = tagNode1.getName();
-
-
-                    if (tag_name != null && tag_name.equals("img")) {
-                        String src = tagNode1.getAttributeByName("src");
-                        if (src == null)
-                            src = tagNode1.getAttributeByName("data-src");
-                        linearLayout.addView(makeImageView(src));
-                    } else if (class_name != null && class_name.equals("ab_box_title")) {
-                        TextView textView = makeTextView(0, 10, 0, 10, 13);
-                        textView.setTextColor(Color.parseColor("#5d91c3"));
-                        textView.setTypeface(null, Typeface.BOLD);
-                        giveAttribute(tagNode1, textView);
-
-                        linearLayout.addView(textView);
-                    } else if (class_name != null && class_name.equals("ab_box_content")) {
-                        TextView textView = makeTextView(0, 5, 0, 5, 10);
-                        giveAttribute(tagNode1, textView);
-
-                        linearLayout.addView(textView);
-                    }else
-                        makeBox(linearLayout,tagNode1);
-                }
+            } else if (obj instanceof TagNode) {
+                adjustAttribute((TagNode) obj, spannableStringBuilder);
             }
         }
-
-        return;
     }
 
-    private void addTextTagComponent(String content) {
-        TextView textView = makeTextView(0, 10, 0, 10, 13);
-        textView.setTextColor(Color.parseColor("#000000"));
-        TextViewCompat.setTextAppearance(textView,
-                android.R.style.TextAppearance_Material_Body1);
-        textView.setText(content);
-
-        linearLayout.addView(textView);
-    }
-
-
-    private void giveAttribute(TagNode tagNode, TextView textView) {
-        for (Object obj : tagNode.getAllChildren()) {
-            if (obj instanceof ContentNode) {
-                ContentNode contentNode = (ContentNode) obj;
-
-                String content = contentNode.getContent().trim();
-
-                if(tagNode.getName().equals("br")){
-                    content = replaceAll(content);
-                    String temp = textView.getText().toString();
-
-                    if (temp != null)
-                        textView.setText(temp + content);
-                    else
-                        textView.setText(content);
-                }
-
-                if (!content.isEmpty()) {
-                    content = replaceAll(content);
-                    String temp = textView.getText().toString();
-
-                    //이전에 내용이 존재할 경우
-                    if (temp != null)
-                        textView.setText(temp + content);
-                    else
-                        textView.setText(content);
-                }
-
-            } else {
-                if (obj instanceof TagNode) {
-                    TagNode temp = (TagNode) obj;
-                    String tag = temp.getName();
-
-                    if (tag.equals("font")) {
-                        String color = temp.getAttributeByName("color");
-                        textView.setTextColor(Color.parseColor(color));
-                    }
-
-                    if (tag.matches("[Hh][0-9]+$")) {
-                        textResize(textView, tag.charAt(1) - '0');
-                    }
-
-                    if (tag.equals("p")) {
-                        textView.setTypeface(null, Typeface.BOLD);
-                    }
-
-                    giveAttribute(temp, textView);
-                }
-            }
-        }
-
-        return;
-    }
 
 }

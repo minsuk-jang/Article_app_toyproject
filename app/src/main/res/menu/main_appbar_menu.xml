@@ -5,6 +5,17 @@
         android:id="@+id/setting"
         android:icon="@drawable/settings_icon_white_36dp"
         app:showAsAction="always"
-        android:title="Setting"
-        />
+        android:title="Setting">
+
+
+        <menu>
+            <item
+                android:id="@+id/sports"
+                android:title="스포츠"
+                android:icon="@drawable/sport_icon"
+                />
+        </menu>
+
+    </item>
+
 </menu>
