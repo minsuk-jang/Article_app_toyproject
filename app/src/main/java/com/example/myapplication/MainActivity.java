@@ -1,9 +1,12 @@
 package com.example.myapplication;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager.widget.ViewPager;
 
+import android.annotation.SuppressLint;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.Editable;
@@ -11,6 +14,8 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -61,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
         init(article_list);
     }
 
+
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {
@@ -79,16 +85,17 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
                 }
             }
         }
-        Log.d("jms8732", "dispatchTouchEvent");
         return super.dispatchTouchEvent(ev);
     }
 
+    //키보드를 보여준다
     private void showKeyBoard(EditText editText) {
         InputMethodManager manager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         manager.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
         editText.requestFocus();
     }
 
+    //키보드를 숨긴다
     private void hideKeyBoard(EditText editText) {
         InputMethodManager manager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         manager.hideSoftInputFromWindow(editText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
@@ -131,10 +138,28 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
 
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_appbar_menu, menu);
-        return super.onCreateOptionsMenu(menu);
+
+        if(menu instanceof MenuBuilder){
+            MenuBuilder menuBuilder =(MenuBuilder)menu;
+            menuBuilder.setOptionalIconsVisible(true);
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.sports:
+                Toast.makeText(this,"Sport menu clicked" , Toast.LENGTH_SHORT).show();;
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

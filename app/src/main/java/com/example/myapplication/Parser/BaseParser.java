@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.core.content.res.ResourcesCompat;
+import androidx.core.widget.TextViewCompat;
 
 import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
@@ -41,12 +42,14 @@ public abstract class BaseParser {
     abstract void init();
 
     //레이아웃에 컴포넌트 붙이기
-    abstract void addComponent(TagNode tagNode);
+    abstract void addComponent(LinearLayout linearLayout,TagNode tagNode);
 
+    //Drawable 이미지 반환하는 메소드
     protected Drawable getDrawable(int id) {
         return ResourcesCompat.getDrawable(context.getResources(), id, null);
     }
 
+    //TextView를 매개변수에 맞춰서 만들어주는 메소드
     protected TextView makeTextView(int left, int top, int right, int bottom, int textSize) {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -54,11 +57,14 @@ public abstract class BaseParser {
 
         TextView textView = new TextView(context);
         textView.setTextColor(Color.parseColor("#000000"));
+        TextViewCompat.setTextAppearance(textView,
+                android.R.style.TextAppearance_Material_Body1);
         textView.setLayoutParams(params);
         textView.setTextSize(textSize);
         return textView;
     }
 
+    //파라미터를 반환하는 메소드
     protected LinearLayout.LayoutParams getParams(int left, int top, int right, int bottom) {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         params.setMargins(left, top, right, bottom);
@@ -118,32 +124,33 @@ public abstract class BaseParser {
     }
 
     //h1~h6 태그 사이즈 조절
-    protected void textResize(TextView textView, int size) {
-        int sz = (int) textView.getTextSize();
+    protected float convertSize(int size) {
+        float ret = 0f;
         switch (size) {
             case 1:
-                sz = 25;
+                ret = .7f;
                 break;
             case 2:
-                sz = 20;
+                ret = .6f;
                 break;
             case 3:
-                sz = 17;
+                ret = 0.5f;
                 break;
             case 4:
-                sz = 14;
+                ret = 0.4f;
                 break;
             case 5:
-                sz = 12;
+                ret = 0.3f;
                 break;
             case 6:
-                sz = 10;
+                ret = 0.2f;
                 break;
         }
 
-        textView.setTextSize(sz);
+        return ret;
     }
 
+    //동영상 Url
     protected String makeUrl(String data_id) {
         String ret = null;
         int end = data_id.indexOf("?");

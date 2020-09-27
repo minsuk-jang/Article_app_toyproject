@@ -105,44 +105,47 @@ public class ArticleCrawler extends AsyncTask<Object, List<ArticleVO>, List<Arti
         String today_article_photo = body.getString("today_article_photo");
         String today_article_txt = body.getString("today_article_txt");
 
+        //TEST용 데이터
         List<String> temp = new ArrayList<>();
+        /*
+        //중앙 일보
         temp.add("https://news.joins.com/article/23881743?cloc=joongang-home-newslistleft");
         temp.add("https://news.joins.com/article/23881795?cloc=joongang-home-newslistleft");
         temp.add("https://news.joins.com/article/23873691?cloc=joongang-home-newslistleft");
-        //TEST용 데이터
-        for(String src : temp) {
+*//*
+        //동아 일보
+        temp.add("https://www.donga.com/news/Society/article/all/20200927/103160688/1?ref=main");
+        temp.add("https://www.donga.com/news/Politics/article/all/20200927/103160150/1?ref=main");*/
+      /*  for(String src : temp) {
             Document doc = Jsoup.connect(src).get();
-            //https://news.joins.com/article/23881795?cloc=joongang-home-newslistleft
-            //https://news.joins.com/article/23881743?cloc=joongang-home-newslistleft
             String title = doc.select(today_title).text();
             String img_url = doc.select(today_article_photo).attr("src");
             String content = doc.select(today_article_txt).html();
 
             list.add(new ArticleVO(this.title, img_url, title, content));
             publishProgress(list);
-        }
+        }*/
+        //실제 데이터
+       /* Elements elements = Jsoup.connect(base_URL).get().select(today_class);
+            for (Element e : elements) {
 
-     /*   //실제 데이터
-        Elements elements = Jsoup.connect(base_URL).get().select(today_class);
-        for (Element e : elements) {
+                //todo 크롤링 시, 오류 처리
+                try {
+                    String link = e.select("a").attr("href");
+                    Document temp_document = Jsoup.connect(link).get();
+                    String img_url = temp_document.select(today_article_photo).attr("src");
+                    String title = temp_document.select(today_title).text();
+                    String content = temp_document.select(today_article_txt).html();
+                    content = replaceAll(content);
 
-            //todo 크롤링 시, 오류 처리
-            try {
-                String link = e.select("a").attr("href");
-                Document temp_document = Jsoup.connect(link).get();
-                String img_url = temp_document.select(today_article_photo).attr("src");
-                String title = temp_document.select(today_title).text();
-                String content = temp_document.select(today_article_txt).html();
-                content = replaceAll(content);
+                    list.add(new ArticleVO(this.title,img_url, title,content));
 
-                list.add(new ArticleVO(this.title,img_url, title,content));
-
-                if (list.size() % FIX == 0) {
-                    publishProgress(list);
+                    if (list.size() % FIX == 0) {
+                        publishProgress(list);
+                    }
+                }catch(IOException ee){
+                    ee.printStackTrace();
                 }
-            }catch(IOException ee){
-                ee.printStackTrace();
-            }
 
         }*/
     }
