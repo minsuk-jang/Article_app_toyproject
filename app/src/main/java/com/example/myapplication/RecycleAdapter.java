@@ -69,7 +69,7 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             Glide.with(this.context).load(list.get(position).getImg_src()).placeholder(R.drawable.ic_launcher_foreground).into(((ArticleHolder) holder).getImageView()); //이미지 넣기
             ((ArticleHolder) holder).getTitle().setText(list.get(position).getTitle());
 
-            ((ArticleHolder) holder).getContent().setText(Jsoup.clean(list.get(position).getContent(), Whitelist.none()).replaceAll("&nbsp;","").replaceAll("&amp",""));
+            ((ArticleHolder) holder).getContent().setText(Jsoup.clean(list.get(position).getContent(), Whitelist.simpleText()).replaceAll("&nbsp;","").replaceAll("&amp",""));
         }
     }
 
