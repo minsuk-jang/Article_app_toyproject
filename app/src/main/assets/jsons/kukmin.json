@@ -4,7 +4,7 @@
     "delete_tag" : "div.txt_ban, div.article_relation, div#bestnews_layer, script",
     "today": {
       "today_class": "div.mn_headline > div.mn_nws.headline01 > div.con > dl > dd.rel_lst > a, div.mn_headline > div.mn_nws.headline01 > div.con > dl > dt.tit > a, div.mtop_lft_l > div.mn_nws.headline02 > p.thum > a,div.mtop_lft_l > div.mn_nws_box > div.mn_nws > p.thum > a",
-      "today_title": "div.nwsti > h3",
+      "today_title": "div.nwsti",
       "today_article_photo": "div.nws_arti > div.tx > div > figure > img",
       "today_article_txt": "div.nws_arti > div.tx"
     }

@@ -1,0 +1,12 @@
+{
+  "ytn": {
+    "index": "https://www.ytn.co.kr/",
+    "today": {
+      "today_class": "div#wrap > div.main.wrapper > div.vod_list_top > div.top_li1.YTN_CSA_topnews0 > div.thumbwrap > div.thumb > div.centered > a, div#wrap > div.main.wrapper > div.vod_list_top > div.top_li2 > ul > li.YTN_CSA_topnews1 > div.thumbwrap > div.thumb > div.centered > a, div#wrap > div.main.wrapper > div.vod_list_top > div.top_li2 > ul > li.YTN_CSA_topnews2 > div.thumbwrap > div.thumb > div.centered > a, div#wrap > div.main.wrapper > div.vod_list_top > div.top_li2 > ul > li.YTN_CSA_topnews3 > div.thumbwrap > div.thumb > div.centered > a, div#wrap > div.main.wrapper > div.now > div.now01.YTN_CSA_bottomnews1 > ul > li > a, div#wrap > div.main.wrapper > div.now > div.now02.YTN_CSA_bottomnews2 > ul > li > a",
+      "today_title": "div.container > div#wrap > div#czone > div#zone1 > div.top > div > h3",
+      "today_article_photo": "div.container > div#wrap > div#czone > div#zone1 > div.content > div > div.box > div > div.imgArea > img",
+      "today_article_txt": "div.container > div#wrap > div#czone > div#zone1 > div.content > div > div.box"
+    }
+  }
+}
+

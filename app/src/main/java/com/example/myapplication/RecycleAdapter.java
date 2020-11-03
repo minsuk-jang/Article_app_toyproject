@@ -67,7 +67,7 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             ((ProgressHolder) holder).getProgressBar().setIndeterminate(true);
         }else if(holder instanceof ArticleHolder){
             Glide.with(this.context).load(list.get(position).getImg_src()).placeholder(R.drawable.ic_launcher_foreground).into(((ArticleHolder) holder).getImageView()); //이미지 넣기
-            ((ArticleHolder) holder).getTitle().setText(list.get(position).getTitle());
+            ((ArticleHolder) holder).getTitle().setText(Jsoup.parse(list.get(position).getTitle()).text());
 
             ((ArticleHolder) holder).getContent().setText(Jsoup.clean(list.get(position).getContent(), Whitelist.simpleText()).replaceAll("&nbsp;","").replaceAll("&amp",""));
         }

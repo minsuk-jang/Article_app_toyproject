@@ -20,7 +20,13 @@ import java.util.List;
 
 public class SelectActivity extends AppCompatActivity implements View.OnClickListener {
     private ImageButton google, donga, kukmin, ytn, joongang, chosun;
-    private final int MAX_SELECTED = 3;
+
+    /*
+    2개로 설정
+    만약, 3개로 지정할 경우, 1번 -> 3번으로 갈 경우, 1번의 Fragment가 다시 생성됨
+    안드로이드 폰 내부에서 모든걸 처리하므로 위와 같이 새롭게 진행될 때마다 크롤링을 진행하면 성능이 떨어질 거 같아 2개로 설정
+     */
+    private final int MAX_SELECTED = 2;
     private Button confirm;
     private ArrayList<String> ret; //다음 액티비티로 전송될 리스트
 
