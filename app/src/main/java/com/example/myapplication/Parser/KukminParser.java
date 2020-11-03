@@ -20,7 +20,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 public class KukminParser extends BaseParser {
-    private boolean table_first = false;
 
     public KukminParser(LinearLayout linearLayout, String text) {
         super(linearLayout, text);
@@ -30,7 +29,11 @@ public class KukminParser extends BaseParser {
     void init() {
         Document body = Jsoup.parse(text);
 
+        body.select("strong").empty();
+        body.select("strong").unwrap();
+
         totalTagNode = cleaner.clean(body.html());
+
 
         for (Object obj : totalTagNode.getAllChildren()) {
             addComponent(linearLayout, (TagNode) obj);
@@ -58,7 +61,7 @@ public class KukminParser extends BaseParser {
                     ssb.append(content);
                     String tag_name = tagNode.getName();
 
-                    if (tag_name.equals("b") || tag_name.equals("strong")) {
+                    if (tag_name.equals("b")) {
                         StyleSpan styleSpan = new StyleSpan(Typeface.BOLD);
                         ssb.setSpan(styleSpan, ssb.length() - len, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                     }
@@ -120,7 +123,7 @@ public class KukminParser extends BaseParser {
                         if(style_name.contains("padding-top:15px;padding-bottom:15px;border-top:1px solid #444;border-bottom:1px solid #eee;color:#333;font-size:20px;line-height:1.4;font-weight: bold;letter-spacing: -0.0733em;")) {
                             TextView textView = makeTextView(0, 50, 15, 15, 14);
                             textView.setPadding(0, 20, 0, 20);
-                            textView.setBackground(getDrawable(R.drawable.joongang_ab_sub_heading));
+                            textView.setBackground(getDrawable(R.drawable.kukmin_ab_subtitle));
 
                             adjustAttribute(temp, ssb);
                             textView.setText(ssb);

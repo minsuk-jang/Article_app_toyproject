@@ -30,10 +30,8 @@ import java.util.List;
 //기사의 화면을 보여주는 액티비티
 public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSelectedListener {
     private long pressedTime = 0;
-    private Toolbar toolbar;
     private TabLayout tabLayout;
     private ViewPager viewPager;
-    private EditText editText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,65 +40,12 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
 
         ArrayList<String> article_list = (ArrayList<String>) getIntent().getSerializableExtra("article_list");
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
         tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         viewPager = (ViewPager) findViewById(R.id.viewpager);
 
-        editText = (EditText) findViewById(R.id.search);
-        editText.clearFocus();
-        editText.setTextIsSelectable(true);
-        editText.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN) {
-                    Toast.makeText(getApplicationContext(), "Enter pressed", Toast.LENGTH_SHORT).show();
-                    if (v instanceof EditText) {
-                        hideKeyBoard((EditText) v);
-                    }
-                    return true;
-                }
-                return false;
-            }
-        });
         init(article_list);
     }
 
-
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        if (ev.getAction() == MotionEvent.ACTION_DOWN) {
-            View view = getCurrentFocus();
-
-            //EditView를 눌렀는지 확인
-            if (view instanceof EditText) {
-                Rect rect = new Rect();
-                view.getGlobalVisibleRect(rect);
-
-                //범위 내에 없을 경우
-                if (!rect.contains((int) ev.getRawX(), (int) ev.getRawY())) {
-                    hideKeyBoard((EditText) view);
-                } else {
-                    showKeyBoard((EditText) view);
-                }
-            }
-        }
-        return super.dispatchTouchEvent(ev);
-    }
-
-    //키보드를 보여준다
-    private void showKeyBoard(EditText editText) {
-        InputMethodManager manager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-        manager.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
-        editText.requestFocus();
-    }
-
-    //키보드를 숨긴다
-    private void hideKeyBoard(EditText editText) {
-        InputMethodManager manager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-        manager.hideSoftInputFromWindow(editText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-        editText.clearFocus();
-    }
 
     //초기 설정
     private void init(List<String> article_list) {
@@ -136,30 +81,6 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
     @Override
     public void onTabReselected(TabLayout.Tab tab) {
 
-    }
-
-    @SuppressLint("RestrictedApi")
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_appbar_menu, menu);
-
-        if(menu instanceof MenuBuilder){
-            MenuBuilder menuBuilder =(MenuBuilder)menu;
-            menuBuilder.setOptionalIconsVisible(true);
-        }
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.sports:
-                Toast.makeText(this,"Sport menu clicked" , Toast.LENGTH_SHORT).show();;
-                break;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
