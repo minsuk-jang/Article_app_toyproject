@@ -22,54 +22,75 @@ import org.jsoup.safety.Whitelist;
 
 import java.util.List;
 
-public class RecycleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
+public class RecycleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final int VIEW_PROGRESS = 2;
     private final int VIEW_ARTICLE = 1;
+    private static final String DONGA = "donga", JOONGANG ="joongang", KUKMIN = "kukmin"
+            , YTN = "ytn";
+
     private List<ArticleVO> list;
     private Context context;
+    private int emptyImage;
 
-    public RecycleAdapter(Context context){
-        this.context =context;
+    public RecycleAdapter(String title, Context context) {
+        this.context = context;
+
+        this.emptyImage = getImage(title);
     }
 
-    public void setList(List<ArticleVO> list){
+    private int getImage(String title){
+        int ret = 0;
+        if(title.equals(YTN)){
+            ret = R.drawable.ytn;
+        }else if(title.equals(KUKMIN))
+            ret = R.drawable.kukmin;
+        else if(title.equals(JOONGANG))
+            ret = R.drawable.joongang;
+        else if(title.equals(DONGA))
+            ret = R.drawable.donga;
+
+        return ret;
+    }
+
+    public void setList(List<ArticleVO> list) {
         this.list = list;
     }
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if(viewType == VIEW_ARTICLE){
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_view_article,parent,false);
+        if (viewType == VIEW_ARTICLE) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_view_article, parent, false);
             ArticleHolder articleHolder = new ArticleHolder(view);
             articleHolder.setOnItemClickListener(new onItemClickListener() {
                 @Override
                 public void onClickItem(int pos) {
-                    Intent intent = new Intent(context,ShowArticleActivity.class);
+                    Intent intent = new Intent(context, ShowArticleActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP); //액티비티 하나만 띠운다.
-                    intent.putExtra("subject",list.get(pos).getSubject());
-                    intent.putExtra("title",list.get(pos).getTitle());
-                    intent.putExtra("content",list.get(pos).getContent());
+                    intent.putExtra("subject", list.get(pos).getSubject());
+                    intent.putExtra("title", list.get(pos).getTitle());
+                    intent.putExtra("content", list.get(pos).getContent());
 
                     context.startActivity(intent);
                 }
             });
             return articleHolder;
-        }else{
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.progress_part,parent,false);
+        } else {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.progress_part, parent, false);
             return new ProgressHolder(view);
         }
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        if(holder instanceof ProgressHolder){
+        if (holder instanceof ProgressHolder) {
             ((ProgressHolder) holder).getProgressBar().setIndeterminate(true);
-        }else if(holder instanceof ArticleHolder){
-            Glide.with(this.context).load(list.get(position).getImg_src()).placeholder(R.drawable.ic_launcher_foreground).into(((ArticleHolder) holder).getImageView()); //이미지 넣기
+        } else if (holder instanceof ArticleHolder) {
+            Glide.with(this.context).load(list.get(position).getImg_src()).placeholder(this.emptyImage).into(((ArticleHolder) holder).getImageView()); //이미지 넣기
             ((ArticleHolder) holder).getTitle().setText(Jsoup.parse(list.get(position).getTitle()).text());
 
-            ((ArticleHolder) holder).getContent().setText(Jsoup.clean(list.get(position).getContent(), Whitelist.simpleText()).replaceAll("&nbsp;","").replaceAll("&amp",""));
+           // ((ArticleHolder) holder).getContent().setText(Jsoup.clean(list.get(position).getContent(), Whitelist.simpleText()).replaceAll("&nbsp;", "").replaceAll("&amp", ""));
+            ((ArticleHolder)holder).getContent().setText(Jsoup.parse(list.get(position).getContent()).text());
         }
     }
 

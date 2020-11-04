@@ -65,7 +65,7 @@ public class ShowArticleActivity extends AppCompatActivity {
 
             if (!sub_txt.isEmpty()) {
                 TextView sub = makeTextView(0, 0, 0, 3, "#d36b1f");
-                sub.setTextSize(13);
+                sub.setTextSize(15);
                 sub.setPadding(20, 0, 0, 0);
                 sub.setBackground(getResources().getDrawable(R.drawable.kukmin_ab_sub_heading));
                 sub.setText(sub_txt);

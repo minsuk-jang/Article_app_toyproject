@@ -27,9 +27,9 @@ public class YtnParser extends BaseParser {
     @Override
     void init() {
         Document body = Jsoup.parse(text);
-/*
-        body.select("div.subhead, ab_photo.photo_center, div.ovp_recommend").empty();
-        body.select("div.ab_related_article, ab_photo.photo_center, div.ovp_recommend").unwrap();*/
+
+        body.select("div.ad_box.txtad, div.more_box.YTN_CSA_morenews").empty();
+        body.select("div.ad_box.txtad, div.more_box.YTN_CSA_morenews").unwrap();
 
         totalTagNode = cleaner.clean(body.html());
 
@@ -73,7 +73,7 @@ public class YtnParser extends BaseParser {
                     String style_name = temp.getAttributeByName("style");
                     String id_name = temp.getAttributeByName("id");
 
-                    if (tag_name.equals("script") || tag_name.equals("a"))
+                    if (tag_name.equals("script") || tag_name.equals("a") || tag_name.equals("style"))
                         continue;
 
                     if (style_name != null) {
@@ -89,9 +89,12 @@ public class YtnParser extends BaseParser {
                             if (src == null)
                                 src = temp.getAttributeByName("data-src");
 
+                            if(!src.contains("image.ytn.co.kr"))
+                                src = "https://www.ytn.co.kr"+src;
+
                             view = makeImageView(src);
                         } else if (tag_name.equals("br") && !ssb.toString().isEmpty()) {//br로 나누기때문에 아래와 같이 진행
-                            TextView textView = makeTextView(0, 2, 0, 2, 11);
+                            TextView textView = makeTextView(0, 2, 0, 7, 13);
                             textView.setText(ssb);
 
                             view = textView;
@@ -104,15 +107,15 @@ public class YtnParser extends BaseParser {
                         }
                     }
 
-                    if(id_name != null){
+                    if (id_name != null) {
                         View view = null;
-                        if(id_name.equals("zumplayer")){
+                        if (id_name.equals("zumplayer")) {
                             String baseURL = "https://pip-player.zum.com/";
                             String type = temp.getAttributeByName("data-type");
                             String invenid = temp.getAttributeByName("data-invenid");
                             String contentid = temp.getAttributeByName("data-contentid");
 
-                            view = makeWebView(0,5,0,10,500,baseURL + type + "?invenid=" + invenid + "&contentid=" + contentid);
+                            view = makeWebView(0, 5, 0, 10, 500, baseURL + type + "?invenid=" + invenid + "&contentid=" + contentid);
                         }
 
                         if (view != null) {
@@ -123,7 +126,27 @@ public class YtnParser extends BaseParser {
 
                     if (class_name != null) {
                         View view = null;
+                        SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
 
+                        if (class_name.equals("subhead")) {
+                            TextView textView = makeTextView(0, 3, 0, 7, 13);
+                            textView.setPadding(10, 0, 0, 0);
+                            adjustAttribute(temp, spannableStringBuilder);
+
+                            if(!spannableStringBuilder.toString().isEmpty())
+                                textView.setBackground(getDrawable(R.drawable.joongang_ab_subtitle));
+
+                            textView.setText(spannableStringBuilder);
+                            view = textView;
+                        }else if(class_name.equals("imgcaption")){
+                            TextView textView = makeTextView(0, 0, 0, 5, 10);
+                            textView.setTextColor(Color.parseColor("#666666"));
+                            textView.setGravity(Gravity.CENTER_HORIZONTAL);
+
+                            adjustAttribute(temp, spannableStringBuilder);
+                            textView.setText(spannableStringBuilder);
+                            view = textView;
+                        }
 
                         if (view != null) {
                             linearLayout.addView(view);
@@ -160,7 +183,12 @@ public class YtnParser extends BaseParser {
                     }
                 }
             } else if (obj instanceof TagNode) {
-                adjustAttribute((TagNode) obj, spannableStringBuilder);
+                String tag_name = ((TagNode) obj).getName();
+
+                if (tag_name != null && tag_name.equals("br"))
+                    spannableStringBuilder.append("\n");
+                else
+                    adjustAttribute((TagNode) obj, spannableStringBuilder);
             }
         }
     }
