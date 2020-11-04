@@ -40,8 +40,8 @@ public class JoongangParser extends BaseParser {
     void init() {
         Document body = Jsoup.parse(text);
 
-        body.select("div.ab_related_article, ab_photo.photo_center, div.ovp_recommend").empty();
-        body.select("div.ab_related_article, ab_photo.photo_center, div.ovp_recommend").unwrap();
+        body.select("div.ab_related_article, ab_photo.photo_center, div.ovp_recommend, div.ab_box_article.ab_division.division_left, div.ab_box_article.ab_division.division_right").empty();
+        body.select("div.ab_related_article, ab_photo.photo_center, div.ovp_recommend, div.ab_box_article.ab_division.division_left, div.ab_box_article.ab_division.division_right").unwrap();
         totalTagNode = cleaner.clean(body.html());
 
         for (Object obj : totalTagNode.getAllChildren()) {
@@ -94,7 +94,7 @@ public class JoongangParser extends BaseParser {
 
                             view = makeImageView(src);
                         } else if (tag_name.equals("br") && !ssb.toString().isEmpty()) {//br로 나누기때문에 아래와 같이 진행
-                            TextView textView = makeTextView(0, 2, 0, 2, 11);
+                            TextView textView = makeTextView(0, 3, 0, 7, 13);
                             textView.setText(ssb);
 
                             view = textView;
@@ -113,7 +113,9 @@ public class JoongangParser extends BaseParser {
                             String data_id = temp.getAttributeByName("data-id");
                             String data_service = temp.getAttributeByName("data-service");
 
-                            if(data_service.equals("ovp")){
+                            if (data_service.equals("ovp")) {
+                                int idx = data_id.indexOf("?");
+                                data_id = data_id.substring(0,idx);
                                 data_id = "https://oya.joins.com/bc_iframe.html?videoId=" + data_id;
                             }
                             //todo 높이 재조정 필요
@@ -121,14 +123,14 @@ public class JoongangParser extends BaseParser {
                         } else { //그 외 나머지 처리
                             SpannableStringBuilder ssb = new SpannableStringBuilder();
                             if (class_name.equals("caption")) {
-                                TextView textView = makeTextView(0, 0, 0, 3, 8);
+                                TextView textView = makeTextView(0, 0, 0, 3, 10);
                                 textView.setTextColor(Color.parseColor("#737475"));
 
                                 adjustAttribute(temp, ssb);
                                 textView.setText(ssb);
                                 view = textView;
                             } else if (class_name.equals("ab_subtitle")) {
-                                TextView textView = makeTextView(0, 20, 0, 20, 13);
+                                TextView textView = makeTextView(0, 20, 0, 20, 15);
                                 textView.setGravity(Gravity.CENTER_VERTICAL);
                                 textView.setTextColor(Color.parseColor("#3c3e40"));
                                 textView.setPadding(20, 0, 0, 0);
@@ -154,7 +156,7 @@ public class JoongangParser extends BaseParser {
                                 linearLayout.addView(temp_layout);
                                 continue;
                             } else if (class_name.equals("ab_box_titleline")) {
-                                TextView textView = makeTextView(0, 10, 0, 10, 13);
+                                TextView textView = makeTextView(0, 10, 0, 10, 14);
                                 textView.setTextColor(Color.parseColor("#5d81c3"));
                                 adjustAttribute(temp, ssb);
 
@@ -170,7 +172,7 @@ public class JoongangParser extends BaseParser {
                                 quote.setImageResource(R.drawable.quote_black);
 
                                 TextView textView = makeTextView(20, 0, 0, 0, 15);
-                                adjustAttribute(temp,ssb);
+                                adjustAttribute(temp, ssb);
                                 textView.setText(ssb);
 
                                 linearLayout.addView(quote);
@@ -215,7 +217,12 @@ public class JoongangParser extends BaseParser {
                     }
                 }
             } else if (obj instanceof TagNode) {
-                adjustAttribute((TagNode) obj, spannableStringBuilder);
+                String tag_name = ((TagNode) obj).getName();
+
+                if (tag_name.equals("br"))
+                    spannableStringBuilder.append("\n");
+                else
+                    adjustAttribute((TagNode) obj, spannableStringBuilder);
             }
         }
     }

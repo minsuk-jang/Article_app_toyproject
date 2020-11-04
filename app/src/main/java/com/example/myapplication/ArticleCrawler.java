@@ -53,7 +53,6 @@ public class ArticleCrawler extends AsyncTask<Object, List<ArticleVO>, List<Arti
     @Override
     protected void onProgressUpdate(List<ArticleVO>... values) {
         super.onProgressUpdate(values);
-        Log.d("jms", "progressUpdate");
         adapter.setList(values[0]);
         adapter.notifyDataSetChanged();
         progressBar.setVisibility(View.GONE);
@@ -106,23 +105,22 @@ public class ArticleCrawler extends AsyncTask<Object, List<ArticleVO>, List<Arti
         String today_article_txt = body.getString("today_article_txt");
 
         //TEST용 데이터
-        List<String> temp = new ArrayList<>();/*
+        List<String> temp = new ArrayList<>();
+
         //중앙 일보
-        temp.add("https://news.joins.com/article/23881743?cloc=joongang-home-newslistleft");
-        temp.add("https://news.joins.com/article/23881795?cloc=joongang-home-newslistleft");
-        temp.add("https://news.joins.com/article/23873691?cloc=joongang-home-newslistleft");*/
 /*
         //동아 일보
         temp.add("https://www.donga.com/news/Society/article/all/20200927/103160688/1?ref=main");
-        temp.add("https://www.donga.com/news/Politics/article/all/20200927/103160150/1?ref=main");*/
+        temp.add("https://www.donga.com/news/Politics/article/all/20200927/103160150/1?ref=main");
 
-       /* //국민 일보
+       //국민 일보
         temp.add("http://news.kmib.co.kr/article/view.asp?arcid=0015058176&code=61131111&sid1=int");
-        */
+
         //Ytn
         temp.add("https://www.ytn.co.kr/_ln/0101_202011031707277328");
+        temp.add("https://www.ytn.co.kr/_ln/0104_202011041709178451"); */
 
-        for(String src : temp) {
+       /* for (String src : temp) {
             Document doc = Jsoup.connect(src).get();
             String title = doc.select(today_title).text();
             String img_url = doc.select(today_article_photo).attr("src");
@@ -130,38 +128,51 @@ public class ArticleCrawler extends AsyncTask<Object, List<ArticleVO>, List<Arti
 
             list.add(new ArticleVO(this.title, img_url, title, content));
             publishProgress(list);
-        }
+        }*/
 
         //실제 데이터
-        /*Elements elements = Jsoup.connect(base_URL).get().select(today_class);
+        Elements elements = Jsoup.connect(base_URL).get().select(today_class);
         for (Element e : elements) {
 
             //todo 크롤링 시, 오류 처리
             try {
                 String link = e.select("a").attr("href");
-                Document temp_document = makeDocument(base_URL,link);
-                String img_url = temp_document.select(today_article_photo).attr("src");
+                Document temp_document = makeDocument(base_URL, link);
+                String img_url = makeImageURL(base_URL, temp_document.select(today_article_photo).attr("src"));
                 String title = temp_document.select(today_title).html();
                 String content = temp_document.select(today_article_txt).html();
                 content = replaceAll(content);
 
-                list.add(new ArticleVO(this.title,img_url, title,content));
+                list.add(new ArticleVO(this.title, img_url, title, content));
 
                 if (list.size() % FIX == 0) {
                     publishProgress(list);
                 }
-            }catch(IOException ee){
+            } catch (IOException ee) {
                 ee.printStackTrace();
             }
 
-        }*/
+        }
     }
 
-    private Document makeDocument(String baseUrl, String link) throws IOException{
+    private String makeImageURL(String baseURL, String url) {
+        String ret = null;
+        if (title.equals("ytn")) {
+            if (!url.contains("image.ytn.co.kr"))
+                ret = baseURL + url;
+            else
+                ret = url;
+        } else
+            ret = url;
+
+        return ret;
+    }
+
+    private Document makeDocument(String baseUrl, String link) throws IOException {
         Document ret = null;
-        if(title.equals("ytn")){
+        if (title.equals("ytn")) {
             ret = Jsoup.connect(baseUrl + link).get();
-        }else{
+        } else {
             ret = Jsoup.connect(link).get();
         }
 
@@ -194,7 +205,7 @@ public class ArticleCrawler extends AsyncTask<Object, List<ArticleVO>, List<Arti
         return ret;
     }
 
-    private String replaceAll(String text){
+    private String replaceAll(String text) {
         text = text.replaceAll("&gt;", ">");
         text = text.replaceAll("&lt;", "<");
         text = text.replaceAll("&nbsp;", " ");

@@ -92,7 +92,7 @@ public class DongaParser extends BaseParser {
 
                             view = makeImageView(src);
                         } else if (tag_name.equals("br") && !ssb.toString().isEmpty()) {//br로 나누기때문에 아래와 같이 진행
-                            TextView textView = makeTextView(0, 2, 0, 2, 11);
+                            TextView textView = makeTextView(0, 3, 0, 8, 13);
                             textView.setText(ssb);
 
                             view = textView;

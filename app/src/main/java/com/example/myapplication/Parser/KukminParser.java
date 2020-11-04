@@ -40,7 +40,7 @@ public class KukminParser extends BaseParser {
         }
 
         if (!ssb.toString().isEmpty()) {
-            TextView textView = makeTextView(0, 3, 0, 4, 10);
+            TextView textView = makeTextView(0, 3, 0, 4, 13);
             textView.setText(ssb);
 
             linearLayout.addView(textView);
@@ -92,7 +92,7 @@ public class KukminParser extends BaseParser {
 
                             view = makeImageView(src);
                         } else if (tag_name.equals("br") && !ssb.toString().isEmpty()) {//br로 나누기때문에 아래와 같이 진행
-                            TextView textView = makeTextView(0, 2, 0, 2, 11);
+                            TextView textView = makeTextView(0, 3, 0, 7, 13);
                             textView.setText(ssb);
 
                             view = textView;
@@ -101,7 +101,7 @@ public class KukminParser extends BaseParser {
                             SpannableStringBuilder ssb = new SpannableStringBuilder();
 
                             if (tag_name.equals("figcaption")) {
-                                TextView textView = makeTextView(0, 0, 0, 3, 8);
+                                TextView textView = makeTextView(0, 0, 0, 3, 10);
                                 textView.setTextColor(Color.parseColor("#737475"));
 
                                 adjustAttribute(temp, ssb);
