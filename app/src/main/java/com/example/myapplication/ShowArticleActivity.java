@@ -20,6 +20,7 @@ import org.w3c.dom.Text;
 public class ShowArticleActivity extends AppCompatActivity {
     TextView title;
     LinearLayout linearLayout;
+    private final int subtitle_size = 17, title_size = 20;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,7 +55,7 @@ public class ShowArticleActivity extends AppCompatActivity {
 
             TextView main = makeTextView(0, 0, 0, 3, "#000000");
             TextViewCompat.setTextAppearance(main, android.R.style.TextAppearance_Material_Headline);
-            main.setTextSize(20);
+            main.setTextSize(title_size);
             main.setTypeface(null, Typeface.BOLD);
 
             String main_txt = Jsoup.parse(t).select("h3").text();
@@ -64,8 +65,8 @@ public class ShowArticleActivity extends AppCompatActivity {
             String sub_txt = Jsoup.parse(t).select("h4").text().trim();
 
             if (!sub_txt.isEmpty()) {
-                TextView sub = makeTextView(0, 0, 0, 3, "#d36b1f");
-                sub.setTextSize(15);
+                TextView sub = makeTextView(0, 0, 0, 5, "#d36b1f");
+                sub.setTextSize(subtitle_size);
                 sub.setPadding(20, 0, 0, 0);
                 sub.setBackground(getResources().getDrawable(R.drawable.kukmin_ab_sub_heading));
                 sub.setText(sub_txt);
@@ -75,11 +76,9 @@ public class ShowArticleActivity extends AppCompatActivity {
 
             linearLayout.addView(temp_layout);
         } else {
-            LinearLayout.LayoutParams params = makeParams(0, 3, 0, 10);
-
             TextView textView = makeTextView(0, 0, 0, 3, "#000000");
             TextViewCompat.setTextAppearance(textView, android.R.style.TextAppearance_Material_Headline);
-            textView.setTextSize(20);
+            textView.setTextSize(title_size);
             textView.setTypeface(null, Typeface.BOLD);
             textView.setText(Jsoup.clean(t, Whitelist.simpleText()));
 

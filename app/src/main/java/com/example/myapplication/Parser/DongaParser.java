@@ -92,7 +92,7 @@ public class DongaParser extends BaseParser {
 
                             view = makeImageView(src);
                         } else if (tag_name.equals("br") && !ssb.toString().isEmpty()) {//br로 나누기때문에 아래와 같이 진행
-                            TextView textView = makeTextView(0, 3, 0, 8, 13);
+                            TextView textView = makeTextView(0, 3, 0, 8, text_size);
                             textView.setText(ssb);
 
                             view = textView;
@@ -123,14 +123,14 @@ public class DongaParser extends BaseParser {
                         } else { //그 외 나머지 처리
                             SpannableStringBuilder ssb = new SpannableStringBuilder();
                             if (class_name.equals("txt")) {
-                                TextView textView = makeTextView(0, 0, 0, 3, 10);
+                                TextView textView = makeTextView(0, 0, 0, 3, caption_size);
                                 textView.setTextColor(Color.parseColor("#828282"));
 
                                 adjustAttribute(temp, ssb);
                                 textView.setText(ssb);
                                 view = textView;
                             } else if (class_name.equals("sub_title")) {
-                                TextView textView = makeTextView(0, 30, 0, 30, 17);
+                                TextView textView = makeTextView(0, 30, 0, 30, headline_size);
                                 textView.setBackground(getDrawable(R.drawable.donga_textborder));
                                 textView.setPadding(20, 0, 0, 0);
                                 textView.setGravity(Gravity.CENTER_VERTICAL);
@@ -173,7 +173,7 @@ public class DongaParser extends BaseParser {
 
                 if (!content.isEmpty()) {
                     content = replaceAll(content);
-                    TextView textView = makeTextView(0, 10, 0, 10, 12);
+                    TextView textView = makeTextView(0, 10, 0, 10, text_size);
                     TextViewCompat.setTextAppearance(textView, R.style.TextAppearance_AppCompat_Body1);
                     textView.setText(content);
 

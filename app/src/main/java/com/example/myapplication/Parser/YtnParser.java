@@ -38,7 +38,7 @@ public class YtnParser extends BaseParser {
         }
 
         if (!ssb.toString().isEmpty()) {
-            TextView textView = makeTextView(0, 3, 0, 4, 10);
+            TextView textView = makeTextView(0, 3, 0, 4, text_size);
             textView.setText(ssb);
 
             linearLayout.addView(textView);
@@ -94,7 +94,7 @@ public class YtnParser extends BaseParser {
 
                             view = makeImageView(src);
                         } else if (tag_name.equals("br") && !ssb.toString().isEmpty()) {//br로 나누기때문에 아래와 같이 진행
-                            TextView textView = makeTextView(0, 2, 0, 7, 13);
+                            TextView textView = makeTextView(0, 2, 0, 7, text_size);
                             textView.setText(ssb);
 
                             view = textView;
@@ -129,17 +129,18 @@ public class YtnParser extends BaseParser {
                         SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
 
                         if (class_name.equals("subhead")) {
-                            TextView textView = makeTextView(0, 3, 0, 7, 13);
+                            TextView textView = makeTextView(0, 3, 0, 7, headline_size);
                             textView.setPadding(10, 0, 0, 0);
                             adjustAttribute(temp, spannableStringBuilder);
 
-                            if(!spannableStringBuilder.toString().isEmpty())
+                            if(!spannableStringBuilder.toString().isEmpty()) {
                                 textView.setBackground(getDrawable(R.drawable.joongang_ab_subtitle));
+                                textView.setText(spannableStringBuilder);
+                                view = textView;
+                            }
 
-                            textView.setText(spannableStringBuilder);
-                            view = textView;
                         }else if(class_name.equals("imgcaption")){
-                            TextView textView = makeTextView(0, 0, 0, 5, 10);
+                            TextView textView = makeTextView(0, 0, 0, 5, caption_size);
                             textView.setTextColor(Color.parseColor("#666666"));
                             textView.setGravity(Gravity.CENTER_HORIZONTAL);
 

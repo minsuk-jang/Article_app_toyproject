@@ -8,7 +8,7 @@ import android.widget.LinearLayout;
 import java.lang.reflect.ParameterizedType;
 
 public class ParserHelper {
-    private static final String DONGA = "donga", JOONGANG ="joongang", KUKMIN = "kukmin"
+    private static final String DONGA = "donga", JOONGANG ="joongang", KUKMIN = "kukmin", KHAN = "khan"
             , YTN = "ytn";
 
     private ParserHelper(){
@@ -24,5 +24,7 @@ public class ParserHelper {
             new KukminParser(v, article).init();
         else if(kind.equals(YTN))
             new YtnParser(v,article).init();
+        else if(kind.equals(KHAN))
+            new KhanParser(v,article).init();
     }
 }

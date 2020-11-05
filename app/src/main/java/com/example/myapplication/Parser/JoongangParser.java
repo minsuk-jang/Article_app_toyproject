@@ -94,7 +94,7 @@ public class JoongangParser extends BaseParser {
 
                             view = makeImageView(src);
                         } else if (tag_name.equals("br") && !ssb.toString().isEmpty()) {//br로 나누기때문에 아래와 같이 진행
-                            TextView textView = makeTextView(0, 3, 0, 7, 13);
+                            TextView textView = makeTextView(0, 3, 0, 7, text_size);
                             textView.setText(ssb);
 
                             view = textView;
@@ -123,7 +123,7 @@ public class JoongangParser extends BaseParser {
                         } else { //그 외 나머지 처리
                             SpannableStringBuilder ssb = new SpannableStringBuilder();
                             if (class_name.equals("caption")) {
-                                TextView textView = makeTextView(0, 0, 0, 3, 10);
+                                TextView textView = makeTextView(0, 0, 0, 3, caption_size);
                                 textView.setTextColor(Color.parseColor("#737475"));
 
                                 adjustAttribute(temp, ssb);
@@ -156,7 +156,7 @@ public class JoongangParser extends BaseParser {
                                 linearLayout.addView(temp_layout);
                                 continue;
                             } else if (class_name.equals("ab_box_titleline")) {
-                                TextView textView = makeTextView(0, 10, 0, 10, 14);
+                                TextView textView = makeTextView(0, 10, 0, 10, headline_size);
                                 textView.setTextColor(Color.parseColor("#5d81c3"));
                                 adjustAttribute(temp, ssb);
 

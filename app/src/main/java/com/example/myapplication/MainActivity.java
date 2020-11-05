@@ -64,8 +64,9 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.addOnTabSelectedListener(this);
 
-        for (int i = 0; i < viewPager.getAdapter().getCount(); i++)
+        for (int i = 0; i < viewPager.getAdapter().getCount(); i++) {
             tabLayout.getTabAt(i).setIcon(viewPagerAdapter.getFragmentVo(i).getIcon());
+        }
     }
 
     @Override
@@ -114,6 +115,8 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
             return R.drawable.chosun;
         else if (title.equals("kukmin"))
             return R.drawable.kukmin;
+        else if(title.equals("khan"))
+            return R.drawable.khan_logo;
 
         return -1;
     }
