@@ -25,7 +25,7 @@ import java.util.List;
 public class RecycleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final int VIEW_PROGRESS = 2;
     private final int VIEW_ARTICLE = 1;
-    private static final String DONGA = "donga", JOONGANG ="joongang", KUKMIN = "kukmin"
+    private static final String DONGA = "donga", JOONGANG ="joongang", KUKMIN = "kukmin" , KHAN = "khan"
             , YTN = "ytn";
 
     private List<ArticleVO> list;
@@ -34,7 +34,6 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public RecycleAdapter(String title, Context context) {
         this.context = context;
-
         this.emptyImage = getImage(title);
     }
 
@@ -48,6 +47,8 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             ret = R.drawable.joongang;
         else if(title.equals(DONGA))
             ret = R.drawable.donga;
+        else if(title.equals(KHAN))
+            ret = R.drawable.khan_logo;
 
         return ret;
     }
@@ -88,8 +89,6 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         } else if (holder instanceof ArticleHolder) {
             Glide.with(this.context).load(list.get(position).getImg_src()).placeholder(this.emptyImage).into(((ArticleHolder) holder).getImageView()); //이미지 넣기
             ((ArticleHolder) holder).getTitle().setText(Jsoup.parse(list.get(position).getTitle()).text());
-
-           // ((ArticleHolder) holder).getContent().setText(Jsoup.clean(list.get(position).getContent(), Whitelist.simpleText()).replaceAll("&nbsp;", "").replaceAll("&amp", ""));
             ((ArticleHolder)holder).getContent().setText(Jsoup.parse(list.get(position).getContent()).text());
         }
     }

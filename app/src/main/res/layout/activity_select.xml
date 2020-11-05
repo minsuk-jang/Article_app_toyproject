@@ -80,6 +80,16 @@
                     android:scaleType="centerCrop"
                     android:src="@drawable/ytn"
                     android:tooltipText="YTN" />
+
+                <ImageButton
+                    android:id="@+id/khan"
+                    android:layout_width="@dimen/button_image_width"
+                    android:layout_height="@dimen/button_image_height"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/selector"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/khan_logo"
+                    android:tooltipText="YTN" />
             </GridLayout>
         </ScrollView>
 

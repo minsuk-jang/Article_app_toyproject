@@ -29,6 +29,7 @@ public abstract class BaseParser {
     protected HtmlCleaner cleaner;
     protected Context context;
     protected SpannableStringBuilder ssb;
+    protected int text_size = 14, caption_size = 11, headline_size = 16;
 
     protected BaseParser(LinearLayout linearLayout, String text) {
         this.linearLayout = linearLayout;

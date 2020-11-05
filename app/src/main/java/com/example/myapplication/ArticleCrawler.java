@@ -107,20 +107,12 @@ public class ArticleCrawler extends AsyncTask<Object, List<ArticleVO>, List<Arti
         //TEST용 데이터
         List<String> temp = new ArrayList<>();
 
-        //중앙 일보
-/*
-        //동아 일보
-        temp.add("https://www.donga.com/news/Society/article/all/20200927/103160688/1?ref=main");
-        temp.add("https://www.donga.com/news/Politics/article/all/20200927/103160150/1?ref=main");
-
-       //국민 일보
-        temp.add("http://news.kmib.co.kr/article/view.asp?arcid=0015058176&code=61131111&sid1=int");
-
-        //Ytn
+        /*//Ytn
         temp.add("https://www.ytn.co.kr/_ln/0101_202011031707277328");
-        temp.add("https://www.ytn.co.kr/_ln/0104_202011041709178451"); */
+        temp.add("https://www.ytn.co.kr/_ln/0104_202011041709178451");*/
 
-       /* for (String src : temp) {
+
+     /*   for (String src : temp) {
             Document doc = Jsoup.connect(src).get();
             String title = doc.select(today_title).text();
             String img_url = doc.select(today_article_photo).attr("src");
@@ -130,7 +122,7 @@ public class ArticleCrawler extends AsyncTask<Object, List<ArticleVO>, List<Arti
             publishProgress(list);
         }*/
 
-        //실제 데이터
+          //실제 데이터
         Elements elements = Jsoup.connect(base_URL).get().select(today_class);
         for (Element e : elements) {
 
@@ -151,7 +143,6 @@ public class ArticleCrawler extends AsyncTask<Object, List<ArticleVO>, List<Arti
             } catch (IOException ee) {
                 ee.printStackTrace();
             }
-
         }
     }
 
@@ -172,9 +163,8 @@ public class ArticleCrawler extends AsyncTask<Object, List<ArticleVO>, List<Arti
         Document ret = null;
         if (title.equals("ytn")) {
             ret = Jsoup.connect(baseUrl + link).get();
-        } else {
+        } else
             ret = Jsoup.connect(link).get();
-        }
 
         return ret;
     }

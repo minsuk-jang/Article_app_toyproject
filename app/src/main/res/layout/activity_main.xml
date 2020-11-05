@@ -18,7 +18,7 @@
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appbar_layout"
             android:layout_width="match_parent"
-            android:layout_height="180dp"
+            android:layout_height="wrap_content"
             android:background="@drawable/appbar_layout_style"
             android:fitsSystemWindows="true"
             android:layout_margin="5dp"
@@ -39,9 +39,10 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
                     app:tabGravity="fill"
-                    app:tabIndicatorColor="#344955"
+                    app:tabIndicatorColor="@color/baseColor"
+                    app:tabSelectedTextColor="@color/baseColor"
                     app:tabMode="fixed"
-                    app:tabTextColor="#344955"/>
+                    app:tabTextColor="#ffffff"/>
 
             </com.google.android.material.appbar.CollapsingToolbarLayout>
         </com.google.android.material.appbar.AppBarLayout>

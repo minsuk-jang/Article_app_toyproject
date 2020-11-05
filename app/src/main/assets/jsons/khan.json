@@ -1,0 +1,12 @@
+{
+  "khan": {
+    "index": "http://www.khan.co.kr/",
+    "today": {
+      "today_class": "div#wrap > div#container > div.section_wrap > div.clt > div.sectionB > div.con > div.clt > ul > li > span.thumb > a, div#wrap > div#container > div.section_wrap > div.clt > div.sectionB > div.con > div.crt > ul > li > strong.hd_title.top > a, div#wrap > div#container > div.spotMain > div.mainLeft > div.clt > ul > li > strong.hd_title > a, div#wrap > div#container > div.spotMain > div.mainLeft > div.cct > div.mArticle > span.thumb > a, div#wrap > div#container > div.spotMain > div.mainLeft > div.cct > div.sArticle > ul > li > strong.hd_title > a",
+      "today_title": "div#wrap > div#container > div.art_header.borderless > div.subject > h1#article_title.headline.mg, div#wrap > div#container > div.main_container > div.view_header > div.subject > h1#articleTtitle.headline, div#wrap > div.sub_container > div#contentWrap.content_wrap > div.sub_content > div.art_tit",
+      "today_article_photo": "div#wrap > div#container > div.art_cont > div#articleBody.art_body > div.art_photo.photo_center > div.art_photo_wrap > img, div#wrap > div#container > div.main_container > div.art_cont > div.art_body > div.art_photo.photo_center > div.art_photo_wrap > img, div#wrap > div.sub_container > div#contentWrap.content_wrap > div.sub_content > div.art_thumb > img",
+      "today_article_txt": "div#wrap > div#container > div.art_cont > div#articleBody.art_body, div#wrap > div#container > div.main_container > div.art_cont > div.art_body, div#wrap > div.sub_container > div#contentWrap.content_wrap > div.sub_content"
+    }
+  }
+}
+

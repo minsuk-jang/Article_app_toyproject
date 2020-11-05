@@ -8,7 +8,6 @@ import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -19,9 +18,10 @@ import org.htmlcleaner.TagNode;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-public class KukminParser extends BaseParser {
+public class KhanParser extends BaseParser {
 
-    public KukminParser(LinearLayout linearLayout, String text) {
+
+    public KhanParser(LinearLayout linearLayout, String text) {
         super(linearLayout, text);
     }
 
@@ -29,18 +29,16 @@ public class KukminParser extends BaseParser {
     void init() {
         Document body = Jsoup.parse(text);
 
-        body.select("strong").empty();
-        body.select("strong").unwrap();
-
+        body.select("div#scrollEmotion, div.related_serial, div#lv-container, div.art_latest, script").empty();
+        body.select("div#scrollEmotion, div.related_serial, div#lv-container, div.art_latest, script").unwrap();
         totalTagNode = cleaner.clean(body.html());
-
 
         for (Object obj : totalTagNode.getAllChildren()) {
             addComponent(linearLayout, (TagNode) obj);
         }
 
         if (!ssb.toString().isEmpty()) {
-            TextView textView = makeTextView(0, 3, 0, 4, text_size);
+            TextView textView = makeTextView(0, 5, 0, 5, text_size);
             textView.setText(ssb);
 
             linearLayout.addView(textView);
@@ -61,7 +59,7 @@ public class KukminParser extends BaseParser {
                     ssb.append(content);
                     String tag_name = tagNode.getName();
 
-                    if (tag_name.equals("b")) {
+                    if (tag_name.equals("b") || tag_name.equals("strong")) {
                         StyleSpan styleSpan = new StyleSpan(Typeface.BOLD);
                         ssb.setSpan(styleSpan, ssb.length() - len, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                     }
@@ -73,8 +71,9 @@ public class KukminParser extends BaseParser {
                     String tag_name = temp.getName();
                     String class_name = temp.getAttributeByName("class");
                     String style_name = temp.getAttributeByName("style");
+                    String id_name = temp.getAttributeByName("id");
 
-                    if (tag_name.equals("script") || tag_name.equals("a"))
+                    if (tag_name.equals("script") || tag_name.equals("a") || tag_name.equals("style"))
                         continue;
 
                     if (style_name != null) {
@@ -92,22 +91,16 @@ public class KukminParser extends BaseParser {
 
                             view = makeImageView(src);
                         } else if (tag_name.equals("br") && !ssb.toString().isEmpty()) {//br로 나누기때문에 아래와 같이 진행
-                            TextView textView = makeTextView(0, 3, 0, 7, text_size);
+                            TextView textView = makeTextView(0, 5, 0, 5, text_size);
                             textView.setText(ssb);
 
                             view = textView;
                             ssb.delete(0, ssb.length());
-                        }else {
-                            SpannableStringBuilder ssb = new SpannableStringBuilder();
+                        }else if( tag_name.equals("iframe")){
+                            String data_id = temp.getAttributeByName("src");
 
-                            if (tag_name.equals("figcaption")) {
-                                TextView textView = makeTextView(0, 0, 0, 3, caption_size);
-                                textView.setTextColor(Color.parseColor("#737475"));
-
-                                adjustAttribute(temp, ssb);
-                                textView.setText(ssb);
-                                view = textView;
-                            }
+                            //todo 높이 재조정 필요
+                            view = makeWebView(0, 5, 0, 10, 450, data_id);
                         }
 
                         if (view != null) {
@@ -116,18 +109,51 @@ public class KukminParser extends BaseParser {
                         }
                     }
 
-                    if(style_name != null){
+                    if (class_name != null) {
                         View view = null;
-                        SpannableStringBuilder ssb = new SpannableStringBuilder();
+                        SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
 
-                        if(style_name.contains("padding-top:15px;padding-bottom:15px;border-top:1px solid #444;border-bottom:1px solid #eee;color:#333;font-size:20px;line-height:1.4;font-weight: bold;letter-spacing: -0.0733em;")) {
-                            TextView textView = makeTextView(0, 50, 15, 15, text_size);
-                            textView.setPadding(0, 20, 0, 20);
-                            textView.setBackground(getDrawable(R.drawable.kukmin_ab_subtitle));
+                       if (class_name.equals("art_subtit")) {
+                            TextView textView = makeTextView(0, 5, 0, 5, headline_size);
+                            textView.setPadding(10, 0, 0, 0);
+                            adjustAttribute(temp, spannableStringBuilder);
 
-                            adjustAttribute(temp, ssb);
-                            textView.setText(ssb);
+                            if (!spannableStringBuilder.toString().isEmpty()) {
+                                textView.setBackground(getDrawable(R.drawable.joongang_ab_subtitle));
+                                textView.setText(spannableStringBuilder);
+                                view = textView;
+                            }
+                        } else if (class_name.equals("caption")) {
+                            TextView textView = makeTextView(0, 3, 0, 5, caption_size);
+                            textView.setTextColor(Color.parseColor("#777777"));
+
+                            adjustAttribute(temp, spannableStringBuilder);
+                            textView.setText(spannableStringBuilder);
                             view = textView;
+                        } else if (class_name.equals("strapline")) {
+                            TextView textView = makeTextView(0, 5, 0, 5, text_size);
+                            textView.setTypeface(null, Typeface.BOLD);
+
+                            adjustAttribute(temp, spannableStringBuilder);
+                            textView.setText(spannableStringBuilder);
+                            view = textView;
+                        } else if (class_name.equals("boxLineBG")) {
+                            LinearLayout temp_layout = makeLinearLayout(4, 30, 4, 30, LinearLayout.VERTICAL);
+                            temp_layout.setBackgroundColor(Color.parseColor("#f5f5f5"));
+                            temp_layout.setPadding(30, 20, 30, 20);
+
+                            addComponent(temp_layout, temp);
+
+                           if (!ssb.toString().isEmpty()) {
+                               TextView textView = makeTextView(0, 5, 0, 5, text_size);
+                               textView.setText(ssb);
+
+                               temp_layout.addView(textView);
+                               ssb.delete(0,ssb.length());
+                           }
+
+                            linearLayout.addView(temp_layout);
+                            continue;
                         }
 
                         if (view != null) {
@@ -165,10 +191,13 @@ public class KukminParser extends BaseParser {
                     }
                 }
             } else if (obj instanceof TagNode) {
-                adjustAttribute((TagNode) obj, spannableStringBuilder);
+                String tag_name = ((TagNode) obj).getName();
+
+                if (tag_name != null && tag_name.equals("br"))
+                    spannableStringBuilder.append("\n");
+                else
+                    adjustAttribute((TagNode) obj, spannableStringBuilder);
             }
         }
     }
-
-
 }

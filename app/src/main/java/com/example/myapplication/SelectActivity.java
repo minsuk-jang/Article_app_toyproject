@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SelectActivity extends AppCompatActivity implements View.OnClickListener {
-    private ImageButton google, donga, kukmin, ytn, joongang, chosun;
+    private ImageButton google, donga, kukmin, ytn, joongang, chosun, khan;
 
     /*
     2개로 설정
@@ -58,6 +58,8 @@ public class SelectActivity extends AppCompatActivity implements View.OnClickLis
         ytn.setOnClickListener(this);
         chosun = (ImageButton)findViewById(R.id.chosun);
         chosun.setOnClickListener(this);
+        khan = (ImageButton)findViewById(R.id.khan);
+        khan.setOnClickListener(this);
     }
 
     @Override
@@ -102,6 +104,8 @@ public class SelectActivity extends AppCompatActivity implements View.OnClickLis
             ret = "kukmin";
         else if (v == donga)
             ret = "donga";
+        else if (v == khan)
+            ret = "khan";
 
         return ret;
     }
