@@ -2,9 +2,9 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/container"
     tools:context=".MainActivity">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -12,17 +12,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/baseColor"
-        android:fitsSystemWindows="true"
-       >
+        android:fitsSystemWindows="true">
 
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appbar_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/appbar_layout_style"
-            android:fitsSystemWindows="true"
             android:layout_margin="5dp"
-            >
+            android:background="@drawable/appbar_layout_style"
+            android:fitsSystemWindows="true">
 
             <!-- App bar 내에서 위치를 조정하기 위해서 사용 -->
             <com.google.android.material.appbar.CollapsingToolbarLayout
@@ -40,18 +38,47 @@
                     android:layout_gravity="bottom"
                     app:tabGravity="fill"
                     app:tabIndicatorColor="@color/baseColor"
-                    app:tabSelectedTextColor="@color/baseColor"
                     app:tabMode="fixed"
-                    app:tabTextColor="#ffffff"/>
+                    app:tabSelectedTextColor="@color/baseColor"
+                    app:tabTextColor="#ffffff" />
 
             </com.google.android.material.appbar.CollapsingToolbarLayout>
         </com.google.android.material.appbar.AppBarLayout>
 
-        <androidx.viewpager.widget.ViewPager
-            android:id="@+id/viewpager"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
+            <androidx.viewpager.widget.ViewPager
+                android:id="@+id/viewpager"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
+            <com.skydoves.transformationlayout.TransformationLayout
+                android:id="@+id/translayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="24dp"
+                android:layout_gravity="end|bottom"
+                app:transformation_duration="550"
+                app:transformation_targetView="@+id/cardview">
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fab"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="#f9aa33"
+                    app:fabSize="mini"
+                    android:src="@drawable/add_white"
+                    app:borderWidth="0dp" />
+            </com.skydoves.transformationlayout.TransformationLayout>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardview"
+                android:layout_width="240dp"
+                android:layout_height="312dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="30dp"
+                app:cardBackgroundColor="#f9aa33" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

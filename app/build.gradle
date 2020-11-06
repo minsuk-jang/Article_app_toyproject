@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.myapplication"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -30,6 +30,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     implementation 'org.jsoup:jsoup:1.12.2'
     implementation 'androidx.cardview:cardview:1.0.0'
+    implementation "com.github.skydoves:transformationlayout:1.0.6"
     //noinspection GradleCompatible
     implementation 'com.android.support:design:28.0.0-rc01'
     implementation 'net.sourceforge.htmlcleaner:htmlcleaner:2.5'

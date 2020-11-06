@@ -7,6 +7,10 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager.widget.ViewPager;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.Editable;
@@ -22,7 +26,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
+import com.skydoves.transformationlayout.TransformationLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +38,27 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
     private long pressedTime = 0;
     private TabLayout tabLayout;
     private ViewPager viewPager;
+    private ViewPagerAdapter viewPagerAdapter;
+    private FloatingActionButton menu;
+    private TransformationLayout transformationLayout;
+    private boolean expand = false;
+
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(expand){
+                transformationLayout.finishTransform();
+                expand = !expand;
+            }
+        }
+    };
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        registerReceiver(receiver,new IntentFilter("com.example.Expand_collapse"));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,13 +70,25 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
         tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         viewPager = (ViewPager) findViewById(R.id.viewpager);
 
+        transformationLayout = (TransformationLayout) findViewById(R.id.translayout);
+        menu = (FloatingActionButton) findViewById(R.id.fab);
+        menu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!expand)
+                    transformationLayout.startTransform();
+
+                expand = !expand;
+            }
+        });
+
         init(article_list);
     }
 
 
     //초기 설정
     private void init(List<String> article_list) {
-        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), 1);
+        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), 1);
 
         for (String title : article_list) {
             int logo = getLogoImage(title);
@@ -67,11 +106,16 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
         for (int i = 0; i < viewPager.getAdapter().getCount(); i++) {
             tabLayout.getTabAt(i).setIcon(viewPagerAdapter.getFragmentVo(i).getIcon());
         }
+
     }
 
     @Override
     public void onTabSelected(TabLayout.Tab tab) {
         viewPager.setCurrentItem(tab.getPosition());
+        if(expand){
+            transformationLayout.finishTransform();
+            expand = !expand;
+        }
     }
 
     @Override
@@ -86,6 +130,11 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
 
     @Override
     public void onBackPressed() {
+        if(expand){
+            transformationLayout.finishTransform();
+            expand = !expand;
+        }
+
         if (pressedTime == 0) {
             Toast.makeText(this, "한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show();
             pressedTime = System.currentTimeMillis();
@@ -93,6 +142,7 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
             long end = System.currentTimeMillis();
             if (end - pressedTime > 2000) { //누른지 2초가 지난 후,
                 Toast.makeText(this, "한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show();
+                unregisterReceiver(receiver);
                 pressedTime = end;
             } else {
                 super.onBackPressed();
@@ -115,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
             return R.drawable.chosun;
         else if (title.equals("kukmin"))
             return R.drawable.kukmin;
-        else if(title.equals("khan"))
+        else if (title.equals("khan"))
             return R.drawable.khan_logo;
 
         return -1;

@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,14 +21,17 @@ import com.example.myapplication.DataVO.ArticleVO;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.widget.AbsListView.OnScrollListener.SCROLL_STATE_FLING;
+
 public class ArticleFragment extends Fragment {
     private String title;
     private RecyclerView recyclerView;
     private RecycleAdapter adapter;
-    private ProgressBar init_progress;
     private RelativeLayout relativeLayout;
     private List<ArticleVO> list;
     private ArticleCrawler articleCrawler;
+    private boolean wantChange = false;
+    private Intent broad = new Intent("com.example.Expand_collapse");
 
     //fragment는 생성자를 한번만 호출한다.
     public ArticleFragment(String title) {
@@ -59,10 +63,17 @@ public class ArticleFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.article_fragment, container, false);
         relativeLayout = (RelativeLayout) view.findViewById(R.id.fragment_container);
-        init_progress = (ProgressBar) view.findViewById(R.id.init_progressbar);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.recycle_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(relativeLayout.getContext()));
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == SCROLL_STATE_FLING)
+                    getContext().sendBroadcast(broad);
+            }
+        });
 
         adapter = new RecycleAdapter(title, this.getContext());
         recyclerView.setAdapter(adapter);
@@ -74,9 +85,21 @@ public class ArticleFragment extends Fragment {
         return relativeLayout;
     }
 
+    public String getTitle() {
+        return this.title;
+    }
+
+    public void setFragmentChange(boolean c) {
+        this.wantChange = c;
+    }
+
+    public boolean getFragmentChange() {
+        return this.wantChange;
+    }
+
     private void init() {
         list = new ArrayList<>();
-        articleCrawler = new ArticleCrawler(title, getContext(), adapter, recyclerView, init_progress);
+        articleCrawler = new ArticleCrawler(title, getContext(), adapter, recyclerView);
         articleCrawler.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, 0, list); //AsyncTask를 병렬로 수행
     }
 
