@@ -38,24 +38,21 @@ public class ArticleCrawler extends AsyncTask<Object, List<ArticleVO>, List<Arti
     private Context context;
     private final int TODAY = 0;
     private RecycleAdapter adapter;
-    private ProgressBar progressBar;
     private RecyclerView recyclerView;
-    private final int FIX = 5;
 
-    public ArticleCrawler(String title, Context context, RecycleAdapter adapter, RecyclerView recyclerView, ProgressBar progressBar) {
+    public ArticleCrawler(String title, Context context, RecycleAdapter adapter, RecyclerView recyclerView) {
         this.title = title;
         this.context = context;
         this.adapter = adapter;
-        this.progressBar = progressBar;
         this.recyclerView = recyclerView;
     }
+
 
     @Override
     protected void onProgressUpdate(List<ArticleVO>... values) {
         super.onProgressUpdate(values);
         adapter.setList(values[0]);
         adapter.notifyDataSetChanged();
-        progressBar.setVisibility(View.GONE);
         recyclerView.setVisibility(View.VISIBLE);
     }
 
@@ -130,14 +127,15 @@ public class ArticleCrawler extends AsyncTask<Object, List<ArticleVO>, List<Arti
             try {
                 String link = e.select("a").attr("href");
                 Document temp_document = makeDocument(base_URL, link);
-                String img_url = makeImageURL(base_URL, temp_document.select(today_article_photo).attr("src"));
-                String title = temp_document.select(today_title).html();
-                String content = temp_document.select(today_article_txt).html();
-                content = replaceAll(content);
 
-                list.add(new ArticleVO(this.title, img_url, title, content));
+                if(temp_document != null) {
+                    String img_url = makeImageURL(base_URL, temp_document.select(today_article_photo).attr("src"));
+                    String title = temp_document.select(today_title).html();
+                    String content = temp_document.select(today_article_txt).html();
+                    content = replaceAll(content);
 
-                if (list.size() % FIX == 0) {
+                    list.add(new ArticleVO(this.title, img_url, title, content));
+
                     publishProgress(list);
                 }
             } catch (IOException ee) {
@@ -163,7 +161,7 @@ public class ArticleCrawler extends AsyncTask<Object, List<ArticleVO>, List<Arti
         Document ret = null;
         if (title.equals("ytn")) {
             ret = Jsoup.connect(baseUrl + link).get();
-        } else
+        } else if(!link.isEmpty())
             ret = Jsoup.connect(link).get();
 
         return ret;

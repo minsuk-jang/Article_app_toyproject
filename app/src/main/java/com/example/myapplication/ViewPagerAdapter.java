@@ -1,5 +1,7 @@
 package com.example.myapplication;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -14,9 +16,10 @@ import java.util.List;
 
 public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     private List<FragmentVO> list = new ArrayList<>();
-
+    private FragmentManager manager;
     public ViewPagerAdapter(FragmentManager fm, int behavior) {
         super(fm, behavior);
+        manager = fm;
     }
 
     public void addFragment(int icon, String title, Fragment fragment) {
@@ -42,5 +45,19 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         return list.get(position).getTitle();
+    }
+
+
+    @Override
+    public int getItemPosition(@NonNull Object object) {
+        ArticleFragment articleFragment = (ArticleFragment)object;
+
+
+        if(articleFragment.getFragmentChange()){
+
+            return POSITION_NONE;
+        }else
+            return POSITION_UNCHANGED;
+
     }
 }
