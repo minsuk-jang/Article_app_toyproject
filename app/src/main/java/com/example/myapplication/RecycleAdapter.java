@@ -2,24 +2,18 @@ package com.example.myapplication;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.myapplication.DataVO.ArticleVO;
 import com.example.myapplication.Holder.ArticleHolder;
-import com.example.myapplication.Holder.ProgressHolder;
 
 import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
 
 import java.util.List;
 
@@ -85,9 +79,7 @@ public class RecycleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        if (holder instanceof ProgressHolder) {
-            ((ProgressHolder) holder).getProgressBar().setIndeterminate(true);
-        } else if (holder instanceof ArticleHolder) {
+        if (holder instanceof ArticleHolder) {
             Glide.with(this.context).load(list.get(position).getImg_src()).placeholder(this.emptyImage).into(((ArticleHolder) holder).getImageView()); //이미지 넣기
             ((ArticleHolder) holder).getTitle().setText(Jsoup.parse(list.get(position).getTitle()).text());
             ((ArticleHolder) holder).getContent().setText(Jsoup.parse(list.get(position).getContent()).text());

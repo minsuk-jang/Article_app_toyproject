@@ -46,39 +46,145 @@
         </com.google.android.material.appbar.AppBarLayout>
 
 
-            <androidx.viewpager.widget.ViewPager
-                android:id="@+id/viewpager"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/viewpager"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-            <com.skydoves.transformationlayout.TransformationLayout
-                android:id="@+id/translayout"
+        <com.skydoves.transformationlayout.TransformationLayout
+            android:id="@+id/translayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="24dp"
+            app:transformation_duration="550"
+            app:transformation_targetView="@+id/cardview">
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="24dp"
-                android:layout_marginBottom="24dp"
-                android:layout_gravity="end|bottom"
-                app:transformation_duration="550"
-                app:transformation_targetView="@+id/cardview">
+                android:backgroundTint="@color/secondaryColor"
+                android:src="@drawable/add_white"
+                app:borderWidth="0dp"
+                app:fabSize="mini" />
+        </com.skydoves.transformationlayout.TransformationLayout>
 
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/fab"
+        <LinearLayout
+            android:id="@+id/cardview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="100dp"
+            android:layout_gravity="end|bottom"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/select_background"
+            android:orientation="vertical">
+
+            <GridLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:columnCount="3"
+                android:padding="15dp">
+
+                <ImageButton
+                    android:id="@+id/google"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@drawable/selector"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/google"
+                    android:tooltipText="google" />
+
+                <ImageButton
+                    android:id="@+id/chosun"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:background="@drawable/selector"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/chosun"
+                    android:tooltipText="chosun" />
+
+                <ImageButton
+                    android:id="@+id/donga"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@drawable/selector"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/donga"
+                    android:tooltipText="donga" />
+
+                <ImageButton
+                    android:id="@+id/joongang"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/selector"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/joongang"
+                    android:tooltipText="joongang" />
+
+                <ImageButton
+                    android:id="@+id/kukmin"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginRight="20dp"
+                    android:background="@drawable/selector"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/kukmin"
+                    android:tooltipText="kukmin" />
+
+                <ImageButton
+                    android:id="@+id/ytn"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/selector"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ytn"
+                    android:tooltipText="ytn" />
+
+                <ImageButton
+                    android:id="@+id/khan"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/selector"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/khan_logo"
+                    android:tooltipText="khan" />
+            </GridLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/ok_cancel"
+                android:orientation="horizontal"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:gravity="center">
+
+                <ImageButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:backgroundTint="#f9aa33"
-                    app:fabSize="mini"
-                    android:src="@drawable/add_white"
-                    app:borderWidth="0dp" />
-            </com.skydoves.transformationlayout.TransformationLayout>
+                    android:id="@+id/ok"
+                    android:background="@drawable/ok_button"
+                    android:layout_marginRight="50dp"
+                    />
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardview"
-                android:layout_width="240dp"
-                android:layout_height="312dp"
-                android:layout_marginLeft="30dp"
-                android:layout_marginTop="30dp"
-                app:cardBackgroundColor="#f9aa33" />
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/cancel"
+                    android:background="@drawable/cancel_button"
+                    />
+
+            </LinearLayout>
+        </LinearLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

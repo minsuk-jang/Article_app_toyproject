@@ -22,7 +22,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         manager = fm;
     }
 
-    public void addFragment(int icon, String title, Fragment fragment) {
+    public void addFragment(int icon, String title, ArticleFragment fragment) {
         list.add(new FragmentVO(title, fragment, icon));
     }
 
@@ -52,9 +52,13 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     public int getItemPosition(@NonNull Object object) {
         ArticleFragment articleFragment = (ArticleFragment)object;
 
-
         if(articleFragment.getFragmentChange()){
-
+            for(int i =0 ; i < list.size() ; i++){
+                if(list.get(i).getFragment().equals(articleFragment)){
+                    list.remove(i);
+                    break;
+                }
+            }
             return POSITION_NONE;
         }else
             return POSITION_UNCHANGED;
