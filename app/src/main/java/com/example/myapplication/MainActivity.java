@@ -24,8 +24,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.example.myapplication.DataVO.FragmentVO;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.skydoves.transformationlayout.TransformationLayout;
@@ -34,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 //기사의 화면을 보여주는 액티비티
-public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSelectedListener {
+public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSelectedListener, View.OnClickListener {
     private long pressedTime = 0;
     private TabLayout tabLayout;
     private ViewPager viewPager;
@@ -42,11 +45,16 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
     private FloatingActionButton menu;
     private TransformationLayout transformationLayout;
     private boolean expand = false;
+    private int total_count = 0, MAX_COUNT = 2;
+    private ImageButton cancel, ok;
+    private int id_list[] = {R.id.google, R.id.donga, R.id.kukmin, R.id.ytn, R.id.joongang, R.id.chosun, R.id.khan};
+    private LinearLayout select_layout;
+    private List<ImageButton> buttons;
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(expand){
+            if (expand) {
                 transformationLayout.finishTransform();
                 expand = !expand;
             }
@@ -57,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
     protected void onStart() {
         super.onStart();
 
-        registerReceiver(receiver,new IntentFilter("com.example.Expand_collapse"));
+        registerReceiver(receiver, new IntentFilter("com.example.Expand_collapse"));
     }
 
     @Override
@@ -71,12 +79,16 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
         viewPager = (ViewPager) findViewById(R.id.viewpager);
 
         transformationLayout = (TransformationLayout) findViewById(R.id.translayout);
+        select_layout = (LinearLayout) findViewById(R.id.cardview);
+        select_layout.setOnClickListener(this);
         menu = (FloatingActionButton) findViewById(R.id.fab);
         menu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!expand)
+                if (!expand) {
                     transformationLayout.startTransform();
+
+                }
 
                 expand = !expand;
             }
@@ -94,8 +106,9 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
             int logo = getLogoImage(title);
             if (logo == -1) {
                 //todo 에러 처리
-            } else
+            } else {
                 viewPagerAdapter.addFragment(logo, title, new ArticleFragment(title));
+            }
         }
 
         viewPager.setAdapter(viewPagerAdapter);
@@ -107,12 +120,128 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
             tabLayout.getTabAt(i).setIcon(viewPagerAdapter.getFragmentVo(i).getIcon());
         }
 
+        buttons = new ArrayList<>();
+
+        for (int i = 0; i < id_list.length; i++) {
+            ImageButton temp = (ImageButton) findViewById(id_list[i]);
+            temp.setOnClickListener(this);
+
+            buttons.add(temp);
+        }
+
+        ok = (ImageButton) findViewById(R.id.ok);
+        ok.setOnClickListener(this);
+        cancel = (ImageButton) findViewById(R.id.cancel);
+        cancel.setOnClickListener(this);
+
+        isSelected(article_list);
+    }
+
+    private void isSelected(List<String> list) {
+        for (String s : list) {
+            for (ImageButton ib : buttons) {
+                String name = convertName(ib.getId());
+
+                if (name.equals(s)) {
+                    total_count++;
+                    ib.setSelected(true);
+                }
+            }
+        }
+    }
+
+    private String convertName(int id) {
+        String ret = null;
+        switch (id) {
+            case R.id.google:
+                ret = "google";
+                break;
+            case R.id.donga:
+                ret = "donga";
+                break;
+            case R.id.chosun:
+                ret = "chosun";
+                break;
+            case R.id.joongang:
+                ret = "joongang";
+                break;
+            case R.id.khan:
+                ret = "khan";
+                break;
+            case R.id.kukmin:
+                ret = "kukmin";
+                break;
+            case R.id.ytn:
+                ret = "ytn";
+                break;
+        }
+
+        return ret;
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v == select_layout) {
+
+        } else if (v == ok) {
+            List<ImageButton> select_button = new ArrayList<>();
+
+            //선택된 이미지 버튼을 추가
+            for (ImageButton ib : buttons) {
+                if (ib.isSelected()) {
+                    select_button.add(ib);
+                }
+            }
+
+            //비교
+            for (int i = 0; i < viewPagerAdapter.getCount(); i++) {
+                String title = viewPagerAdapter.getFragmentVo(i).getTitle();
+
+                boolean change = false;
+                for (ImageButton ib : select_button) {
+                    String ib_title = convertName(ib.getId());
+
+                    if (title.equals(ib_title)) {
+                        //이미 있는 기사가 나올 경우
+                        change = false;
+                        break;
+                    }else{
+                        change = true;
+                    }
+                }
+
+                viewPagerAdapter.getFragmentVo(i).getFragment().setFragmentChange(change);
+            }
+
+            for(int i = 0 ; i <viewPagerAdapter.getCount() ; i++) {
+                Log.d("jms8732", "Title : " + viewPagerAdapter.getFragmentVo(i).getFragment().getTitle() + " Change: " + viewPagerAdapter.getFragmentVo(i).getFragment().getFragmentChange());
+
+                if(viewPagerAdapter.getFragmentVo(i).getFragment().getFragmentChange())
+                    tabLayout.removeTabAt(i);
+            }
+
+            viewPagerAdapter.notifyDataSetChanged();
+
+            transformationLayout.finishTransform();
+            expand = !expand;
+        } else if (v == cancel) {
+            transformationLayout.finishTransform();
+            expand = !expand;
+        } else if (v.isSelected()) {
+            v.setSelected(false);
+            total_count--;
+        } else {
+            if (total_count < MAX_COUNT) {
+                v.setSelected(true);
+                total_count++;
+            }
+        }
     }
 
     @Override
     public void onTabSelected(TabLayout.Tab tab) {
         viewPager.setCurrentItem(tab.getPosition());
-        if(expand){
+        if (expand) {
             transformationLayout.finishTransform();
             expand = !expand;
         }
@@ -130,7 +259,7 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
 
     @Override
     public void onBackPressed() {
-        if(expand){
+        if (expand) {
             transformationLayout.finishTransform();
             expand = !expand;
         }

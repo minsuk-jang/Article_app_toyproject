@@ -89,7 +89,7 @@
                     android:background="@drawable/selector"
                     android:scaleType="centerCrop"
                     android:src="@drawable/khan_logo"
-                    android:tooltipText="YTN" />
+                    android:tooltipText="khan" />
             </GridLayout>
         </ScrollView>
 
