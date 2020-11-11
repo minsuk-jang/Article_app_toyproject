@@ -1,6 +1,8 @@
 package com.example.myapplication;
 
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -8,18 +10,19 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.myapplication.DataVO.FragmentVO;
 
+import java.nio.file.attribute.PosixFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     private List<FragmentVO> list = new ArrayList<>();
-    private FragmentManager manager;
+
     public ViewPagerAdapter(FragmentManager fm, int behavior) {
         super(fm, behavior);
-        manager = fm;
     }
 
     public void addFragment(int icon, String title, ArticleFragment fragment) {
@@ -47,21 +50,18 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         return list.get(position).getTitle();
     }
 
-
     @Override
     public int getItemPosition(@NonNull Object object) {
         ArticleFragment articleFragment = (ArticleFragment)object;
 
         if(articleFragment.getFragmentChange()){
-            for(int i =0 ; i < list.size() ; i++){
-                if(list.get(i).getFragment().equals(articleFragment)){
-                    list.remove(i);
-                    break;
-                }
-            }
             return POSITION_NONE;
         }else
-            return POSITION_UNCHANGED;
+            return  POSITION_UNCHANGED;
+    }
 
+    @Override
+    public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
+        super.destroyItem(container, position, object);
     }
 }

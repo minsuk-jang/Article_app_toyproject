@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -41,7 +42,6 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
     private long pressedTime = 0;
     private TabLayout tabLayout;
     private ViewPager viewPager;
-    private ViewPagerAdapter viewPagerAdapter;
     private FloatingActionButton menu;
     private TransformationLayout transformationLayout;
     private boolean expand = false;
@@ -100,8 +100,7 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
 
     //초기 설정
     private void init(List<String> article_list) {
-        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), 1);
-
+        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), 1);
         for (String title : article_list) {
             int logo = getLogoImage(title);
             if (logo == -1) {
@@ -194,8 +193,8 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
             }
 
             //비교
-            for (int i = 0; i < viewPagerAdapter.getCount(); i++) {
-                String title = viewPagerAdapter.getFragmentVo(i).getTitle();
+            for (int i = 0; i < viewPager.getAdapter().getCount(); i++) {
+                String title = ((ViewPagerAdapter)viewPager.getAdapter()).getFragmentVo(i).getTitle();
 
                 boolean change = false;
                 for (ImageButton ib : select_button) {
@@ -203,24 +202,35 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
 
                     if (title.equals(ib_title)) {
                         //이미 있는 기사가 나올 경우
+                        select_button.remove((ImageButton) ib);
                         change = false;
                         break;
-                    }else{
+                    } else {
                         change = true;
                     }
                 }
 
-                viewPagerAdapter.getFragmentVo(i).getFragment().setFragmentChange(change);
+                ((ViewPagerAdapter)viewPager.getAdapter()).getFragmentVo(i).getFragment().setFragmentChange(change);
             }
 
-            for(int i = 0 ; i <viewPagerAdapter.getCount() ; i++) {
-                Log.d("jms8732", "Title : " + viewPagerAdapter.getFragmentVo(i).getFragment().getTitle() + " Change: " + viewPagerAdapter.getFragmentVo(i).getFragment().getFragmentChange());
+            ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), 1);
+            for(int i =0 ; i < viewPager.getAdapter().getCount() ; i++){
+                ArticleFragment articleFragment = ((ViewPagerAdapter)viewPager.getAdapter()).getFragmentVo(i).getFragment();
 
-                if(viewPagerAdapter.getFragmentVo(i).getFragment().getFragmentChange())
-                    tabLayout.removeTabAt(i);
+                if(!articleFragment.getFragmentChange()){
+                    String title = articleFragment.getTitle();
+                    viewPagerAdapter.addFragment(getLogoImage(title),title,new ArticleFragment(title));
+                }
+            }
+            for(ImageButton ib : select_button){
+                String ib_title = convertName(ib.getId());
+                viewPagerAdapter.addFragment(getLogoImage(ib_title),ib_title,new ArticleFragment(ib_title));
             }
 
-            viewPagerAdapter.notifyDataSetChanged();
+            viewPager.setAdapter(viewPagerAdapter);
+            for (int i = 0; i < viewPager.getAdapter().getCount(); i++) {
+                tabLayout.getTabAt(i).setIcon(viewPagerAdapter.getFragmentVo(i).getIcon());
+            }
 
             transformationLayout.finishTransform();
             expand = !expand;
