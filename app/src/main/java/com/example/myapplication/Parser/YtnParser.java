@@ -115,7 +115,7 @@ public class YtnParser extends BaseParser {
                             String invenid = temp.getAttributeByName("data-invenid");
                             String contentid = temp.getAttributeByName("data-contentid");
 
-                            view = makeWebView(0, 5, 0, 10, 550, baseURL + type + "?invenid=" + invenid + "&contentid=" + contentid);
+                            view = makeWebView(0, 5, 0, 10, 600, baseURL + type + "?invenid=" + invenid + "&contentid=" + contentid);
                         }
 
                         if (view != null) {
