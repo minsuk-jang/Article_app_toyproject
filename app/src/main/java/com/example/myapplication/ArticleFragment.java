@@ -31,6 +31,7 @@ public class ArticleFragment extends Fragment {
     private List<ArticleVO> list;
     private ArticleCrawler articleCrawler;
     private boolean wantChange = false;
+    private ProgressBar progressBar;
     private Intent broad = new Intent("com.example.Expand_collapse");
 
     //fragment는 생성자를 한번만 호출한다.
@@ -65,6 +66,7 @@ public class ArticleFragment extends Fragment {
         relativeLayout = (RelativeLayout) view.findViewById(R.id.fragment_container);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.recycle_view);
+        progressBar = (ProgressBar)view.findViewById(R.id.progress_horizontal);
         recyclerView.setLayoutManager(new LinearLayoutManager(relativeLayout.getContext()));
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -72,11 +74,13 @@ public class ArticleFragment extends Fragment {
                 super.onScrollStateChanged(recyclerView, newState);
                 if (newState == SCROLL_STATE_FLING)
                     getContext().sendBroadcast(broad);
+
             }
         });
 
         adapter = new RecycleAdapter(title, this.getContext());
         recyclerView.setAdapter(adapter);
+        recyclerView.setHasFixedSize(true);
 
         //맨 처음 수행할 경우
         if (list == null)
@@ -99,7 +103,7 @@ public class ArticleFragment extends Fragment {
 
     private void init() {
         list = new ArrayList<>();
-        articleCrawler = new ArticleCrawler(title, getContext(), adapter, recyclerView);
+        articleCrawler = new ArticleCrawler(title, getContext(), adapter, recyclerView,progressBar);
         articleCrawler.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, 0, list); //AsyncTask를 병렬로 수행
     }
 

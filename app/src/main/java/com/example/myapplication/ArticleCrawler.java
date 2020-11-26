@@ -39,18 +39,22 @@ public class ArticleCrawler extends AsyncTask<Object, List<ArticleVO>, List<Arti
     private final int TODAY = 0;
     private RecycleAdapter adapter;
     private RecyclerView recyclerView;
+    private  ProgressBar progressBar;
 
-    public ArticleCrawler(String title, Context context, RecycleAdapter adapter, RecyclerView recyclerView) {
+    public ArticleCrawler(String title, Context context, RecycleAdapter adapter, RecyclerView recyclerView, ProgressBar progressBar) {
         this.title = title;
         this.context = context;
         this.adapter = adapter;
         this.recyclerView = recyclerView;
+        this.progressBar = progressBar;
     }
 
 
     @Override
     protected void onProgressUpdate(List<ArticleVO>... values) {
         super.onProgressUpdate(values);
+
+        progressBar.setVisibility(View.GONE);
         adapter.setList(values[0]);
         adapter.notifyDataSetChanged();
         recyclerView.setVisibility(View.VISIBLE);
@@ -66,6 +70,8 @@ public class ArticleCrawler extends AsyncTask<Object, List<ArticleVO>, List<Arti
         try {
             base_URL = object.getString("index");
             choose_state(object, state, list, base_URL);
+
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -121,6 +127,7 @@ public class ArticleCrawler extends AsyncTask<Object, List<ArticleVO>, List<Arti
 
           //실제 데이터
         Elements elements = Jsoup.connect(base_URL).get().select(today_class);
+
         for (Element e : elements) {
 
             //todo 크롤링 시, 오류 처리
@@ -136,7 +143,8 @@ public class ArticleCrawler extends AsyncTask<Object, List<ArticleVO>, List<Arti
 
                     list.add(new ArticleVO(this.title, img_url, title, content));
 
-                    publishProgress(list);
+                        publishProgress(list);
+
                 }
             } catch (IOException ee) {
                 ee.printStackTrace();
