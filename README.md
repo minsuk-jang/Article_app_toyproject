@@ -12,3 +12,9 @@
 ## Result
 
 ![ezgif com-gif-maker](https://user-images.githubusercontent.com/26684848/100310461-a01f6280-2ff0-11eb-98c4-d4b11dda14af.gif)  ![ezgif com-gif-maker (1)](https://user-images.githubusercontent.com/26684848/100310479-ae6d7e80-2ff0-11eb-92e6-10b5da607648.gif)
+
+
+## Library
+* Translayout: https://github.com/skydoves/TransformationLayout
+* Jsoup
+* HtmlCleaner
